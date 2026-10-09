@@ -1,6 +1,5 @@
 # ✈️ Quantum Aviation Optimisation — Gate-Hold & Taxi Emissions Engine
 
-[![CI Build](https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation/actions/workflows/ci.yml/badge.svg)](https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation/actions)
 [![Qiskit](https://img.shields.io/badge/Qiskit-v1.0%2B-6929C4.svg?style=flat&logo=qiskit&logoColor=white)](https://qiskit.org/)
 [![IBM Quantum](https://img.shields.io/badge/IBM_Quantum-ibm__kingston-052FAD.svg?style=flat&logo=ibm&logoColor=white)](https://quantum.ibm.com/)
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Live_App-000000.svg?style=flat&logo=vercel&logoColor=white)](https://qiskit-avaition-optimisation-9wk9l2065.vercel.app/)
