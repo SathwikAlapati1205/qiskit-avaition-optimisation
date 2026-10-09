@@ -2535,38 +2535,97 @@
     /* ========================================================= */
     /* 3. LIVE AVIATION WEATHER & WIND API INTEGRATION           */
     /* ========================================================= */
+    var OWM_API_KEY = "f329656ea5a4008ebb26bb6fcdff14ff";
+    var CARTO_API_KEY = "cb1_4fef_1_4b4879d4d3d50d38c51f3204";
+
     function fetchLiveWeatherAPI() {
-      // Open-Meteo live API for LAX (33.9425° N, 118.4081° W)
-      var url = 'https://api.open-meteo.com/v1/forecast?latitude=33.9425&longitude=-118.4081&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=wind_speed_80m,wind_direction_80m&wind_speed_unit=kn';
-      
-      fetch(url)
-        .then(function(res){ return res.json(); })
+      // Primary: OpenWeatherMap API using provided API key
+      var owmUrl = 'https://api.openweathermap.org/data/2.5/weather?lat=33.9425&lon=-118.4081&units=metric&appid=' + OWM_API_KEY;
+
+      fetch(owmUrl)
+        .then(function(res){
+          if(!res.ok) throw new Error("OWM error " + res.status);
+          return res.json();
+        })
         .then(function(data){
-          if (data && data.current) {
-            var cur = data.current;
-            var windSpd = Math.round(cur.wind_speed_10m || 11);
-            var windDir = Math.round(cur.wind_direction_10m || 250);
-            var gusts = Math.round(cur.wind_gusts_10m || windSpd * 1.3);
-            var tempC = cur.temperature_2m.toFixed(1);
+          if (data && data.wind) {
+            var windSpd = Math.round((data.wind.speed || 5.66) * 1.94384); // m/s to knots
+            var windDir = Math.round(data.wind.deg || 250);
+            var gusts = Math.round((data.wind.gust || data.wind.speed * 1.3) * 1.94384);
+            var tempC = data.main.temp.toFixed(1);
             var tempF = (tempC * 9/5 + 32).toFixed(1);
-            var press = cur.surface_pressure.toFixed(1);
+            var press = data.main.pressure.toFixed(1);
             var inHg = (press * 0.02953).toFixed(2);
 
-            // Runway 24L heading is 249 degrees
-            var rwyHdg = 249;
-            var angleDiff = toRad(windDir - rwyHdg);
-            var headwind = Math.round(windSpd * Math.cos(angleDiff));
-            var crosswind = Math.abs(Math.round(windSpd * Math.sin(angleDiff)));
+            updateWeatherUI(windSpd, windDir, gusts, tempC, tempF, press, inHg, 'OpenWeatherMap API (Authenticated)');
+          }
+        })
+        .catch(function(err){
+          console.log('OpenWeatherMap API fallback to Open-Meteo Aviation API:', err);
+          // Fallback to Open-Meteo
+          var omUrl = 'https://api.open-meteo.com/v1/forecast?latitude=33.9425&longitude=-118.4081&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=kn';
+          fetch(omUrl)
+            .then(function(res){ return res.json(); })
+            .then(function(data){
+              if (data && data.current) {
+                var cur = data.current;
+                var windSpd = Math.round(cur.wind_speed_10m || 11);
+                var windDir = Math.round(cur.wind_direction_10m || 250);
+                var gusts = Math.round(cur.wind_gusts_10m || windSpd * 1.3);
+                var tempC = cur.temperature_2m.toFixed(1);
+                var tempF = (tempC * 9/5 + 32).toFixed(1);
+                var press = cur.surface_pressure.toFixed(1);
+                var inHg = (press * 0.02953).toFixed(2);
+                updateWeatherUI(windSpd, windDir, gusts, tempC, tempF, press, inHg, 'Open-Meteo Aviation API');
+              }
+            });
+        });
+    }
 
-            document.getElementById('metar-wind-display').innerText = windDir + '° @ ' + windSpd + ' kts';
-            document.getElementById('metar-gust-display').innerText = 'Gusting to ' + gusts + ' kts • Visibility > 10 SM • Altimeter ' + inHg + ' inHg';
-            document.getElementById('w-headwind').innerText = (headwind >= 0 ? '+' : '') + headwind + ' kts (' + (headwind >= 0 ? 'Headwind' : 'Tailwind') + ')';
-            document.getElementById('w-crosswind').innerText = crosswind + ' kts (' + (crosswind < 15 ? 'Safe' : 'Crosswind Caution') + ')';
-            document.getElementById('w-temp').innerText = tempC + '° C / ' + tempF + '° F';
-            document.getElementById('w-press').innerText = press + ' hPa (' + inHg + ' inHg)';
+    function updateWeatherUI(windSpd, windDir, gusts, tempC, tempF, press, inHg, sourceName) {
+      var rwyHdg = 249; // LAX Rwy 24L
+      var angleDiff = toRad(windDir - rwyHdg);
+      var headwind = Math.round(windSpd * Math.cos(angleDiff));
+      var crosswind = Math.abs(Math.round(windSpd * Math.sin(angleDiff)));
 
-            // Update Quick Pill
-            document.getElementById('quick-weather-wind').innerText = windDir + '° @ ' + windSpd + ' kts';
+      document.getElementById('metar-wind-display').innerText = windDir + '° @ ' + windSpd + ' kts';
+      document.getElementById('metar-gust-display').innerText = 'Gusting to ' + gusts + ' kts • Visibility > 10 SM • Altimeter ' + inHg + ' inHg (' + sourceName + ')';
+      document.getElementById('w-headwind').innerText = (headwind >= 0 ? '+' : '') + headwind + ' kts (' + (headwind >= 0 ? 'Headwind' : 'Tailwind') + ')';
+      document.getElementById('w-crosswind').innerText = crosswind + ' kts (' + (crosswind < 15 ? 'Safe' : 'Crosswind Caution') + ')';
+      document.getElementById('w-temp').innerText = tempC + '° C / ' + tempF + '° F';
+      document.getElementById('w-press').innerText = press + ' hPa (' + inHg + ' inHg)';
+
+      document.getElementById('quick-weather-wind').innerText = windDir + '° @ ' + windSpd + ' kts';
+      document.getElementById('bar-wind-str').innerText = windDir + '° @ ' + windSpd + ' kts';
+      document.getElementById('bar-temp-str').innerText = Math.round(tempC) + '°C';
+      document.getElementById('bar-gust-str').innerText = gusts + ' kts';
+
+      var windIconEl = document.getElementById('bar-wind-icon');
+      if (windIconEl) windIconEl.style.transform = 'rotate(' + windDir + 'deg)';
+
+      var compassArrow = document.getElementById('wind-compass-arrow');
+      if (compassArrow) compassArrow.setAttribute('transform', 'rotate(' + windDir + ' 90 90)');
+      var compassSpd = document.getElementById('compass-wind-speed');
+      if (compassSpd) compassSpd.textContent = windSpd + ' kts';
+      var compassDir = document.getElementById('compass-wind-dir');
+      if (compassDir) compassDir.textContent = windDir + '°';
+
+      var compassBig = document.getElementById('compass-big-display');
+      if (compassBig) compassBig.textContent = windDir + '° @ ' + windSpd + ' kts';
+      var cHw = document.getElementById('c-hw');
+      if (cHw) cHw.textContent = (headwind >= 0 ? '+' : '') + headwind + ' kts ✓';
+      var cXw = document.getElementById('c-xw');
+      if (cXw) cXw.textContent = crosswind + ' kts ' + (crosswind < 15 ? '✓' : '⚠');
+      var cTemp = document.getElementById('c-temp');
+      if (cTemp) cTemp.textContent = tempC + '°C / ' + tempF + '°F';
+      var cPress = document.getElementById('c-press');
+      if (cPress) cPress.textContent = press + ' hPa';
+
+      var timeStr = new Date().toISOString().slice(8,10) + new Date().toISOString().slice(11,13) + new Date().toISOString().slice(14,16) + 'Z';
+      var metarStr = 'KLAX ' + timeStr + ' ' + String(windDir).padStart(3,'0') + String(windSpd).padStart(2,'0') + 'G' + String(gusts).padStart(2,'0') + 'KT 10SM CLR ' + Math.round(tempC) + '/12 A' + inHg.replace('.','') + ' RMK AO2 SLP132';
+      var metarEl = document.getElementById('raw-metar-code');
+      if (metarEl) metarEl.innerText = metarStr;
+    }
 
             // Update bottom status bar
             document.getElementById('bar-wind-str').innerText = windDir + '° @ ' + windSpd + ' kts';
@@ -2651,8 +2710,8 @@
         zoomControl: true
       });
 
-      // CartoDB Positron / Navigation tiles for sleek Flightradar24 aesthetic
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      // Authenticated CartoDB Navigation tiles using user API Key
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=' + CARTO_API_KEY, {
         attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
         maxZoom: 19
       }).addTo(map);
