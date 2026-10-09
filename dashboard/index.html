@@ -288,16 +288,19 @@
       font-size: 11px;
     }
 
-    /* Main Content Wrapper (Shifted right beside sidebar) */
     main.main-content {
       margin-left: var(--sidebar-w);
       flex: 1;
       width: calc(100% - var(--sidebar-w));
-      min-height: 100vh;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
       background: #ffffff;
       transition: margin-left 0.3s ease, width 0.3s ease;
       position: relative;
     }
+
 
     /* Top Sticky Navigation Bar in Main Area */
     .top-header {
@@ -2661,20 +2664,24 @@
         zoomControl: true
       });
 
-      // High-performance CartoDB Voyager tiles with OSM fallback
-      var tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
-        maxZoom: 19,
-        subdomains: 'abcd'
+      var GOOGLE_MAPS_KEY = 'AIzaSyAIH4oyH-7R-MD_jIelHU2SJPpozPKZ7tw';
+
+      // Primary: Google Maps tiles using user's Google Maps API Key
+      var tileLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=' + GOOGLE_MAPS_KEY, {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; <a href="https://maps.google.com/">Google Maps</a>'
       }).addTo(map);
 
       tileLayer.on('tileerror', function() {
-        console.log('Carto tile error, switching to OpenStreetMap fallback tiles');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        console.log('Google Maps CDN fallback to CartoDB Voyager tiles');
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           maxZoom: 19,
-          attribution: '&copy; OpenStreetMap contributors'
+          subdomains: 'abcd',
+          attribution: '&copy; CARTO &copy; OpenStreetMap'
         }).addTo(map);
       });
+
 
 
       // Render airport markers for LAX, SFO, SAN, PHX, LAS
