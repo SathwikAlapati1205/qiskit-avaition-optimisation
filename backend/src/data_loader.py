@@ -14,6 +14,7 @@ import os
 
 def find_data_file(filename="flights_clean.csv"):
     candidates = [
+        os.path.join(os.path.dirname(__file__), "..", "..", "data", filename),
         os.path.join(os.path.dirname(__file__), "..", "data", filename),
         os.path.join(os.path.dirname(__file__), "..", filename),
         os.path.join(os.getcwd(), "data", filename),
@@ -25,7 +26,9 @@ def find_data_file(filename="flights_clean.csv"):
     return os.path.abspath(candidates[0])
 
 CSV_PATH = find_data_file("flights_clean.csv")
-BASELINE_JSON = os.path.join(os.path.dirname(__file__), "..", "results", "baseline_piece.json")
+BASELINE_JSON = os.path.join(os.path.dirname(__file__), "..", "..", "results", "baseline_piece.json")
+if not os.path.exists(os.path.dirname(BASELINE_JSON)):
+    BASELINE_JSON = os.path.join(os.path.dirname(__file__), "..", "results", "baseline_piece.json")
 
 
 

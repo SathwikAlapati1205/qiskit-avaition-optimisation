@@ -21,8 +21,11 @@ warnings.filterwarnings("ignore")
 SRC = Path(__file__).parent / "src"
 sys.path.insert(0, str(SRC))
 
-RESULTS_DIR = Path(__file__).parent / "results"
+RESULTS_DIR = Path(__file__).parent.parent / "results"
+if not RESULTS_DIR.exists():
+    RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
+
 
 from data_loader import load_lax_nov7, find_busiest_window, select_decision_flights, write_baseline
 from cost_model import build_cost_table, build_hamiltonian, save_cost_table, brute_force_best, greedy_solution
@@ -145,6 +148,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from backend.main import main as backend_main
-    backend_main()
-
+    main()
