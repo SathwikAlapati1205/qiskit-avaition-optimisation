@@ -848,13 +848,14 @@
     footer code { font-family: "JetBrains Mono", monospace; }
 
     .rv {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .rv.in { opacity: 1; transform: none; }
     @media(prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
 
     /* ============================================ */
     /* PERSISTENT BOTTOM WEATHER / STATUS BAR       */
@@ -3047,8 +3048,8 @@
       CH.forEach(function (c) { box.insertAdjacentHTML('beforeend', '<div class="card"><small>' + c[0] + '</small><h4>' + c[1] + '</h4>' + c[2] + '<div class="cap">' + c[3] + '</div></div>'); });
       /* reveal */
       var els = document.querySelectorAll('.rv');
-      if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); }
-      else { var io = new IntersectionObserver(function (a) { a.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }); }, { threshold: .1 }); els.forEach(function (e) { io.observe(e); }); }
+      els.forEach(function (e) { e.classList.add('in'); });
+
     })();
 
     /* ========================================================= */
