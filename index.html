@@ -1359,10 +1359,9 @@
       <div>
         <div class="sidebar-header">
           <a href="#" class="brand-group" onclick="switchView('overview'); return false;">
-            <div class="brand-icon">✈️</div>
             <div class="brand-text">
-              <b>Top Gun Maverick</b>
-              <span>Quantum Flight Hub</span>
+              <b style="font-size:16px; font-weight:800; color:var(--b);">Quantum Aviation</b>
+              <span style="font-size:11px; color:var(--mute-light);">Flight Optimisation Engine</span>
             </div>
           </a>
         </div>
@@ -1387,7 +1386,7 @@
           <div class="nav-item" data-view="radar" onclick="switchView('radar')">
             <div class="nav-item-left">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>
-              <span>Flight Radar 24 Live</span>
+              <span>OpenSky Aviation Live Radar</span>
             </div>
             <span class="nav-badge live">&bull; Live</span>
           </div>
@@ -1395,7 +1394,7 @@
           <div class="nav-item" data-view="calculator" onclick="switchView('calculator')">
             <div class="nav-item-left">
               <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-              <span>Route & Coordinates</span>
+              <span>Route &amp; Coordinates</span>
             </div>
             <span class="nav-badge">Haversine</span>
           </div>
@@ -1403,7 +1402,7 @@
           <div class="nav-item" data-view="weather" onclick="switchView('weather')">
             <div class="nav-item-left">
               <svg viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
-              <span>Weather & Wind Matrix</span>
+              <span>Weather &amp; Wind Matrix</span>
             </div>
             <span class="nav-badge">METAR</span>
           </div>
@@ -1411,7 +1410,7 @@
           <div class="nav-item" data-view="telemetry" onclick="switchView('telemetry')">
             <div class="nav-item-left">
               <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-              <span>Altitude & Climb Profiles</span>
+              <span>Altitude &amp; Climb Profiles</span>
             </div>
             <span class="nav-badge">4% Opt</span>
           </div>
@@ -1432,14 +1431,6 @@
               <span>IBM Kingston Telemetry</span>
             </div>
           </div>
-
-          <div class="nav-item" onclick="openKeyModal()">
-            <div class="nav-item-left">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-              <span>API Keys & Config</span>
-            </div>
-            <span class="nav-badge">Setup</span>
-          </div>
         </nav>
       </div>
 
@@ -1454,7 +1445,7 @@
       </div>
     </aside>
 
-    <!-- MAIN CONTENT PANE (Shifted right beside sidebar) -->
+    <!-- MAIN CONTENT PANE -->
     <main class="main-content">
       <!-- Top header -->
       <header class="top-header">
@@ -1463,9 +1454,9 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
           <div class="header-breadcrumbs">
-            <span>Top Gun Maverick</span>
+            <span>Quantum Aviation</span>
             <span>/</span>
-            <b id="active-breadcrumb-title">Quantum Gate-Hold Optimisation</b>
+            <b id="active-breadcrumb-title">Gate-Hold Optimisation</b>
           </div>
         </div>
 
@@ -1474,14 +1465,18 @@
             <span id="live-utc-clock" style="font-weight:600;">00:00:00Z</span>
             <span style="font-size:10px; background:var(--s); padding:2px 6px; border-radius:8px; color:var(--mute-light);">UTC</span>
           </div>
-          <button class="btn" onclick="openKeyModal()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-            <span>API Keys</span>
-          </button>
           <button class="btn btn-primary" onclick="switchView('radar')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
             <span>Live Radar</span>
           </button>
+          <!-- User Profile Component -->
+          <div style="display:flex; align-items:center; gap:8px; padding:4px 12px 4px 6px; background:var(--s); border-radius:30px; border:1px solid var(--line); margin-left:4px;">
+            <div style="width:26px; height:26px; border-radius:50%; background:var(--b); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;">SA</div>
+            <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+              <b style="font-size:12px; color:#000;">Dispatcher 05</b>
+              <span style="font-size:9.5px; color:var(--green); font-weight:700;">LAX Active</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -1491,7 +1486,7 @@
       <div id="view-overview" class="view-panel active-view">
         <section style="border-top:0; padding-top: 70px;">
           <div class="wrap rv">
-            <div class="eyebrow">Top Gun Maverick &nbsp;|&nbsp; Qiskit Fall Fest 2026, Use Case 05</div>
+            <div class="eyebrow">Qiskit Fall Fest 2026 &nbsp;|&nbsp; Use Case 05 &nbsp;|&nbsp; IBM Quantum Hardware Execution</div>
             <h1>Departures,<br><em>quantum-optimised.</em></h1>
             <p class="lead">A custom 12-qubit QAOA, run on real IBM quantum hardware, found the best gate-hold schedule for six LAX departures. It matched the classical brute-force optimum.</p>
             <div class="spec">
