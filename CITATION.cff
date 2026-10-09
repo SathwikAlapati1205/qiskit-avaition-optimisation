@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software in your research or hackathon submission, please cite it as below."
+authors:
+  - family-names: "Alapati"
+    given-names: "Sathwik"
+title: "Quantum Aviation Optimisation: Gate-Hold & Taxi Emissions Reduction Engine"
+version: "1.0.0"
+date-released: "2026-10-09"
+url: "https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation"
+repository-code: "https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation"
+keywords:
+  - "quantum-computing"
+  - "qiskit"
+  - "qaoa"
+  - "aviation-optimization"
+  - "ibm-quantum"
+  - "co2-reduction"

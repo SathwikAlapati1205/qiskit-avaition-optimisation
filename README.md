@@ -1,5 +1,12 @@
 # ✈️ Quantum Aviation Optimisation — Gate-Hold & Taxi Emissions Engine
 
+[![CI Build](https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation/actions/workflows/ci.yml/badge.svg)](https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation/actions)
+[![Qiskit](https://img.shields.io/badge/Qiskit-v1.0%2B-6929C4.svg?style=flat&logo=qiskit&logoColor=white)](https://qiskit.org/)
+[![IBM Quantum](https://img.shields.io/badge/IBM_Quantum-ibm__kingston-052FAD.svg?style=flat&logo=ibm&logoColor=white)](https://quantum.ibm.com/)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live_App-000000.svg?style=flat&logo=vercel&logoColor=white)](https://qiskit-avaition-optimisation-9wk9l2065.vercel.app/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
+
 > [!IMPORTANT]
 > **ABSTRACT & EXECUTIVE SUMMARY**  
 > High-density airport operations suffer severe runway queue congestion, causing aircraft to idle with engines running and producing unnecessary emissions. This project implements a **utility-scale 12-qubit Quantum Approximate Optimization Algorithm (QAOA)** run directly on real superconducting quantum hardware (**IBM Quantum `ibm_kingston`**).  
@@ -8,13 +15,19 @@
 >
 > **Key Result:** Executed on `ibm_kingston`, QAOA successfully discovered the global ground-state optimum (bitstring `010101010101`), applying a uniform 5-minute gate hold with engines off. This shifts departures out of the peak 15-minute congestion bin, reducing peak departures from **16 to 8**, avoiding **1,165.83 kg of CO₂**, saving **368.9 kg of jet fuel**, and eliminating **27.9 minutes of idling taxi delay**.
 
+👉 **[🌐 Launch Live Web Application & Radar Hub](https://qiskit-avaition-optimisation-9wk9l2065.vercel.app/)**
 
 ---
 
-[![Qiskit](https://img.shields.io/badge/Qiskit-v1.0+-6929C4.svg?style=flat&logo=qiskit&logoColor=white)](https://qiskit.org/)
-[![IBM Quantum](https://img.shields.io/badge/IBM_Quantum-ibm__kingston-052FAD.svg?style=flat&logo=ibm&logoColor=white)](https://quantum.ibm.com/)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
+## 📌 Table of Contents
+- [Problem Overview](#-problem-overview)
+- [Quantum Pipeline Architecture](#-quantum-pipeline-architecture)
+- [Mathematical Formulation](#-mathematical-formulation)
+- [IBM Quantum Hardware Benchmarks](#-ibm-quantum-hardware-benchmarks)
+- [Repository Sitemap](#-repository-sitemap)
+- [Quick Start & Reproduction Guide](#-quick-start--reproduction-guide)
+- [Execution Policy & Compliance](#-execution-policy--compliance)
+- [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
@@ -29,7 +42,25 @@ Each additional departure in a 15-minute window adds **0.310 minutes of taxi del
 
 ---
 
-## ⚛️ Quantum Mathematical Formulation
+## 🧬 Quantum Pipeline Architecture
+
+```mermaid
+flowchart TD
+    A[🛫 OpenSky Flight Telemetry / LAX Dataset] --> B[📊 Peak Window Identification - 16 Departures]
+    B --> C[⚙️ Binary Encoding: 6 Flights × 2 Qubits = 12 Qubits]
+    C --> D[🧮 QUBO Cost Hamiltonian & Phase Separator U_C]
+    D --> E[⚛️ Qiskit QAOA Circuit Construction - p=1]
+    E --> F[🔌 Transpilation for IBM Quantum QPU Coupling Map]
+    F --> G[🚀 IBM Quantum `ibm_kingston` Execution - 4,096 Shots]
+    G --> H[📈 CVaR Energy Minimization & Ground State Sampling]
+    H --> I[🎯 Optimal Schedule Found: 010101010101]
+    I --> J[🌱 -1,165.83 kg CO2 & -368.9 kg Jet Fuel Saved]
+    J --> K[💻 Live Radar Hub Visualization]
+```
+
+---
+
+## ⚛️ Mathematical Formulation
 
 We encode 6 decision flights using **12 qubits** (2 qubits per flight):
 
@@ -64,7 +95,7 @@ $$C(w_1, \dots, w_6) = \sum_{i=1}^{6} \Big[ 0.310 \times \text{Departures}(t_i +
 
 ---
 
-## 📂 Repository Directory Sitemap
+## 📂 Repository Sitemap
 
 ```
 qiskit-avaition-optimisation/
@@ -96,6 +127,9 @@ qiskit-avaition-optimisation/
 ├── index.html                        # Root web entrypoint
 ├── main.py                           # Root CLI entrypoint (delegates to backend/main.py)
 ├── vercel.json                       # Deployment routing configuration
+├── requirements.txt                  # Python dependencies
+├── LICENSE                           # MIT License
+├── CITATION.cff                      # Research citation file
 ├── AGENTS.md                         # Quantum hardware execution guidelines
 └── realapi                           # IBM Quantum API key (Local only)
 ```
@@ -106,13 +140,16 @@ qiskit-avaition-optimisation/
 
 ### 1. Prerequisites & Virtual Environment
 ```bash
+git clone https://github.com/SathwikAlapati1205/qiskit-avaition-optimisation.git
+cd qiskit-avaition-optimisation
+
 python -m venv venv
 # On Windows:
 venv\Scripts\activate
 # On Linux/macOS:
 source venv/bin/activate
 
-pip install qiskit qiskit-ibm-runtime pandas numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ### 2. Preflight Check & Hardware Auth
@@ -141,6 +178,9 @@ Open **[http://127.0.0.1:3000/](http://127.0.0.1:3000/)** in any browser.
 
 ---
 
-## 📜 License & Acknowledgments
+## 📜 License & Citation
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.  
+To cite this repository in academic or competition submissions, see [`CITATION.cff`](CITATION.cff).
+
 Built for **Qiskit Fall Fest 2026 — Use Case 05**.  
 Telemetry powered by **OpenSky Network**, **Open-Meteo Aviation Weather**, and **Carto / Google Maps Platform**.
