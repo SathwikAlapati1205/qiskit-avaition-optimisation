@@ -2394,7 +2394,7 @@
       'hardware': 'IBM Quantum Hardware Telemetry'
     };
 
-    function switchView(viewId) {
+    window.switchView = function(viewId) {
       document.querySelectorAll('.view-panel').forEach(function(el) {
         el.classList.remove('active-view');
       });
@@ -2420,8 +2420,11 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       // Close mobile sidebar if open
-      document.getElementById('sidebar').classList.remove('mobile-open');
-    }
+      var sb = document.getElementById('sidebar');
+      if (sb) sb.classList.remove('mobile-open');
+    };
+    var switchView = window.switchView;
+
 
     function toggleMobileMenu() {
       document.getElementById('sidebar').classList.toggle('mobile-open');
@@ -2623,63 +2626,6 @@
       if (metarEl) metarEl.innerText = metarStr;
     }
 
-            // Update bottom status bar
-            document.getElementById('bar-wind-str').innerText = windDir + '° @ ' + windSpd + ' kts';
-            document.getElementById('bar-temp-str').innerText = Math.round(tempC) + '°C';
-            document.getElementById('bar-gust-str').innerText = gusts + ' kts';
-            var windIconEl = document.getElementById('bar-wind-icon');
-            if (windIconEl) windIconEl.style.transform = 'rotate(' + windDir + 'deg)';
-
-            // Update wind compass rose
-            var compassArrow = document.getElementById('wind-compass-arrow');
-            if (compassArrow) compassArrow.setAttribute('transform', 'rotate(' + windDir + ' 90 90)');
-            var compassSpd = document.getElementById('compass-wind-speed');
-            if (compassSpd) compassSpd.textContent = windSpd + ' kts';
-            var compassDir = document.getElementById('compass-wind-dir');
-            if (compassDir) compassDir.textContent = windDir + '°';
-
-            // Update inline weather cards
-            var wxDir = document.getElementById('wx-wind-dir');
-            if (wxDir) wxDir.textContent = windDir + '°';
-            var wxSpd = document.getElementById('wx-wind-spd');
-            if (wxSpd) wxSpd.textContent = windSpd + ' kts';
-            var wxTemp = document.getElementById('wx-temp-card');
-            if (wxTemp) wxTemp.textContent = Math.round(tempC) + '°C';
-            var wxGust = document.getElementById('wx-gust-card');
-            if (wxGust) wxGust.textContent = gusts + ' kts';
-            var wxHw = document.getElementById('wx-hw');
-            if (wxHw) wxHw.textContent = (headwind >= 0 ? '+' : '') + headwind + ' kts';
-            var wxXw = document.getElementById('wx-xw');
-            if (wxXw) wxXw.textContent = crosswind + ' kts';
-
-            // Update winds-aloft surface row
-            var waSfc = document.getElementById('wa-sfc-dir');
-            if (waSfc) waSfc.textContent = windDir + '°';
-            var waSfcSpd = document.getElementById('wa-sfc-spd');
-            if (waSfcSpd) waSfcSpd.textContent = windSpd + ' kts';
-
-            // Update compass rose big display + data rows
-            var compassBig = document.getElementById('compass-big-display');
-            if (compassBig) compassBig.textContent = windDir + '° @ ' + windSpd + ' kts';
-            var cHw = document.getElementById('c-hw');
-            if (cHw) cHw.textContent = (headwind >= 0 ? '+' : '') + headwind + ' kts ✓';
-            var cXw = document.getElementById('c-xw');
-            if (cXw) cXw.textContent = crosswind + ' kts ' + (crosswind < 15 ? '✓' : '⚠');
-            var cTemp = document.getElementById('c-temp');
-            if (cTemp) cTemp.textContent = tempC + '°C / ' + tempF + '°F';
-            var cPress = document.getElementById('c-press');
-            if (cPress) cPress.textContent = press + ' hPa';
-
-            // Generate synthetic dynamic METAR
-            var timeStr = new Date().toISOString().slice(8,10) + new Date().toISOString().slice(11,13) + new Date().toISOString().slice(14,16) + 'Z';
-            var metarStr = 'KLAX ' + timeStr + ' ' + String(windDir).padStart(3,'0') + String(windSpd).padStart(2,'0') + 'KT 10SM CLR ' + Math.round(tempC) + '/12 A' + inHg.replace('.','') + ' RMK AO2 SLP132';
-            document.getElementById('raw-metar-code').innerText = metarStr;
-          }
-        })
-        .catch(function(err){
-          console.log('Weather API fallback to cached LAX values:', err);
-        });
-    }
 
     /* ========================================================= */
     /* 4. LEAFLET FLIGHTRADAR 24 HUB IMPLEMENTATION              */
