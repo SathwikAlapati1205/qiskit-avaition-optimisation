@@ -831,7 +831,7 @@
     }
 
     footer {
-      padding: 48px 0;
+      padding: 48px 0 96px;
       font-size: 13px;
       color: var(--mute-light);
       text-align: center;
@@ -849,6 +849,142 @@
 
     .rv.in { opacity: 1; transform: none; }
     @media(prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
+    /* ============================================ */
+    /* PERSISTENT BOTTOM WEATHER / STATUS BAR       */
+    /* ============================================ */
+    .bottom-status-bar {
+      position: fixed;
+      bottom: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 0;
+      z-index: 90;
+      font-size: 12.5px;
+      overflow: hidden;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+      transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .status-segment {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      border-right: 1px solid var(--line);
+      height: 100%;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-segment:last-child { border-right: none; }
+
+    .status-segment .seg-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--mute-light);
+    }
+
+    .status-segment .seg-value {
+      font-weight: 700;
+      color: #000;
+      font-size: 12.5px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulseGreen 2s ease-in-out infinite;
+    }
+
+    .status-dot.green { background: var(--green); }
+    .status-dot.blue { background: var(--b); }
+    .status-dot.amber { background: var(--amber); }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .wind-dir-mini {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--b);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: transform 0.8s ease;
+    }
+
+    .status-spacer { flex: 1; }
+
+    .status-clock {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mute);
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    @media(max-width: 860px) {
+      .bottom-status-bar {
+        left: 0;
+      }
+    }
+
+    /* Wind Compass Rose */
+    .compass-rose-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      margin: 28px 0;
+      flex-wrap: wrap;
+    }
+
+    .compass-rose-svg {
+      flex-shrink: 0;
+    }
+
+    .compass-data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 200px;
+    }
+
+    .compass-data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      background: var(--s);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .compass-data-row b {
+      font-weight: 700;
+      color: var(--b);
+    }
 
     /* ========================================================= */
     /* NEW FEATURE VIEWS: FLIGHTRADAR 24, WEATHER, CALCULATOR    */
@@ -1328,13 +1464,17 @@
         </div>
 
         <div class="header-actions">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); padding-right:8px; display:flex; align-items:center; gap:6px;">
+            <span id="live-utc-clock" style="font-weight:600;">00:00:00Z</span>
+            <span style="font-size:10px; background:var(--s); padding:2px 6px; border-radius:8px; color:var(--mute-light);">UTC</span>
+          </div>
           <button class="btn" onclick="openKeyModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-            <span>Weather API Keys</span>
+            <span>API Keys</span>
           </button>
           <button class="btn btn-primary" onclick="switchView('radar')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
-            <span>Launch Live Radar</span>
+            <span>Live Radar</span>
           </button>
         </div>
       </header>
@@ -1924,8 +2064,54 @@
               </div>
             </div>
           </div>
+
+          <!-- Wind Compass Rose Card (full width) -->
+          <div class="card" style="margin-top:28px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <small>Animated Live Wind Vector &mdash; KLAX Open-Meteo API</small>
+                <h4 style="margin:4px 0;">Wind Compass Rose &amp; Live Surface Summary</h4>
+              </div>
+              <span class="nav-badge" style="background:#e8f5e9; color:var(--green); font-size:12px; padding:5px 12px;">VFR &mdash; Visual Flight Rules</span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:40px; flex-wrap:wrap; margin-top:8px;">
+              <svg width="200" height="200" viewBox="0 0 180 180" style="flex-shrink:0;">
+                <circle cx="90" cy="90" r="82" fill="var(--s)" stroke="var(--line)" stroke-width="2"/>
+                <circle cx="90" cy="90" r="60" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+                <circle cx="90" cy="90" r="35" fill="none" stroke="var(--line)" stroke-width="1"/>
+                <text x="90" y="17" font-size="12" font-weight="700" fill="#ff3b30" text-anchor="middle">N</text>
+                <text x="90" y="172" font-size="12" font-weight="700" fill="#8e8e93" text-anchor="middle">S</text>
+                <text x="14" y="94" font-size="12" font-weight="700" fill="#8e8e93" text-anchor="middle">W</text>
+                <text x="166" y="94" font-size="12" font-weight="700" fill="#8e8e93" text-anchor="middle">E</text>
+                <text x="139" y="42" font-size="9" fill="#c7c7cc" text-anchor="middle">NE</text>
+                <text x="139" y="148" font-size="9" fill="#c7c7cc" text-anchor="middle">SE</text>
+                <text x="41" y="42" font-size="9" fill="#c7c7cc" text-anchor="middle">NW</text>
+                <text x="41" y="148" font-size="9" fill="#c7c7cc" text-anchor="middle">SW</text>
+                <line x1="90" y1="28" x2="90" y2="152" stroke="#e5e5ea" stroke-width="12" stroke-linecap="round" transform="rotate(249 90 90)" opacity="0.45"/>
+                <text x="90" y="72" font-size="8" fill="#aaa" text-anchor="middle" transform="rotate(249 90 90)">RWY 24L</text>
+                <g id="wind-compass-arrow" transform="rotate(250 90 90)">
+                  <line x1="90" y1="30" x2="90" y2="78" stroke="#0071e3" stroke-width="4" stroke-linecap="round"/>
+                  <polygon points="90,20 83,36 97,36" fill="#0071e3"/>
+                </g>
+                <circle cx="90" cy="90" r="6" fill="var(--b)"/>
+                <text id="compass-wind-speed" x="90" y="113" font-size="13" font-weight="800" fill="var(--b)" text-anchor="middle">11 kts</text>
+                <text id="compass-wind-dir" x="90" y="127" font-size="10" fill="var(--mute)" text-anchor="middle">250&deg;</text>
+              </svg>
+
+              <div style="display:flex; flex-direction:column; gap:10px; flex:1; max-width:460px;">
+                <div style="font-size:34px; font-weight:800; color:var(--b); letter-spacing:-0.03em; margin-bottom:2px;" id="compass-big-display">250&deg; @ 11 kts</div>
+                <div style="font-size:13px; color:var(--mute); margin-bottom:8px;">Live from Open-Meteo &bull; KLAX (33.9425&deg;N, 118.4081&deg;W)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:var(--s); border-radius:10px; font-size:13px;"><span>Headwind on Rwy 24L</span><b id="c-hw" style="color:var(--green);">+10.8 kts &#10003;</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:var(--s); border-radius:10px; font-size:13px;"><span>Crosswind on Rwy 24L</span><b id="c-xw" style="color:var(--b);">2.1 kts &#10003;</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:var(--s); border-radius:10px; font-size:13px;"><span>Surface Temperature</span><b id="c-temp" style="color:var(--amber);">18.4&deg;C / 65.1&deg;F</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:var(--s); border-radius:10px; font-size:13px;"><span>QNH Pressure</span><b id="c-press">1013.2 hPa</b></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
 
       <!-- ========================================================= -->
       <!-- VIEW 5: ALTITUDE & CLIMB TELEMETRY                        -->
@@ -2040,13 +2226,49 @@
     </main>
   </div>
 
-  <!-- FLOATING PERSISTENT LIVE WEATHER & WIND MINI-HUD (Bottom-Right) -->
-  <div class="floating-weather-hud" onclick="switchView('weather')" title="Click to view full Live Weather & Wind Matrix">
-    <div class="hud-wind-arrow" id="hud-wind-icon" style="transform: rotate(250deg);">↑</div>
-    <div class="hud-text">
-      <b>LAX</b> <span id="hud-wind-str">250&deg; @ 11 kts</span> &bull; <span id="hud-temp-str">18&deg;C</span>
+  <!-- PERSISTENT BOTTOM STATUS / WEATHER BAR -->
+  <div class="bottom-status-bar" id="bottom-status-bar">
+    <div class="status-segment">
+      <div class="status-dot green" id="bar-live-dot"></div>
+      <span class="seg-label">Status</span>
+      <span class="seg-value" style="color:var(--green);">Systems Live</span>
     </div>
-    <span class="hud-badge">Live API</span>
+    <div class="status-segment" onclick="switchView('weather')" style="cursor:pointer;">
+      <div class="wind-dir-mini" id="bar-wind-icon">↑</div>
+      <span class="seg-label">LAX Wind</span>
+      <span class="seg-value" id="bar-wind-str">250° @ 11 kts</span>
+    </div>
+    <div class="status-segment" onclick="switchView('weather')" style="cursor:pointer;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2"><path d="M12 2v1M12 21v1M4.22 4.22l.7.7M18.36 18.36l.7.7M2 12h1M21 12h1M4.22 19.78l.7-.7M18.36 5.64l.7-.7"/><circle cx="12" cy="12" r="5" fill="#ff9500" stroke="none"/></svg>
+      <span class="seg-label">Temp</span>
+      <span class="seg-value" id="bar-temp-str">18°C</span>
+    </div>
+    <div class="status-segment" onclick="switchView('weather')" style="cursor:pointer;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--b)" stroke-width="2"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+      <span class="seg-label">Gusts</span>
+      <span class="seg-value" id="bar-gust-str">16 kts</span>
+    </div>
+    <div class="status-segment">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+      <span class="seg-label">QPU</span>
+      <span class="seg-value" style="color:var(--b);">ibm_kingston</span>
+    </div>
+    <div class="status-segment">
+      <div class="status-dot blue"></div>
+      <span class="seg-label">QAOA</span>
+      <span class="seg-value">CVaR 11.992</span>
+    </div>
+    <div class="status-segment">
+      <div class="status-dot green"></div>
+      <span class="seg-label">CO₂ Avoided</span>
+      <span class="seg-value" style="color:var(--green);">1,165.83 kg</span>
+    </div>
+    <div class="status-spacer"></div>
+    <div class="status-segment" id="bar-flight-rules" style="cursor:pointer;" onclick="switchView('weather')">
+      <span class="seg-label">Flight Rules</span>
+      <span class="seg-value nav-badge" id="bar-vfr-badge" style="background:#e8f5e9; color:var(--green); font-size:10px; padding:2px 7px;">VFR</span>
+    </div>
+    <div class="status-clock" id="bar-utc-clock">00:00:00Z</div>
   </div>
 
   <!-- API KEYS & CONFIG MODAL -->
@@ -2267,11 +2489,55 @@
             document.getElementById('w-temp').innerText = tempC + '° C / ' + tempF + '° F';
             document.getElementById('w-press').innerText = press + ' hPa (' + inHg + ' inHg)';
 
-            // Update Quick Pill & Floating HUD
+            // Update Quick Pill
             document.getElementById('quick-weather-wind').innerText = windDir + '° @ ' + windSpd + ' kts';
-            document.getElementById('hud-wind-str').innerText = windDir + '° @ ' + windSpd + ' kts';
-            document.getElementById('hud-temp-str').innerText = Math.round(tempC) + '°C';
-            document.getElementById('hud-wind-icon').style.transform = 'rotate(' + windDir + 'deg)';
+
+            // Update bottom status bar
+            document.getElementById('bar-wind-str').innerText = windDir + '° @ ' + windSpd + ' kts';
+            document.getElementById('bar-temp-str').innerText = Math.round(tempC) + '°C';
+            document.getElementById('bar-gust-str').innerText = gusts + ' kts';
+            var windIconEl = document.getElementById('bar-wind-icon');
+            if (windIconEl) windIconEl.style.transform = 'rotate(' + windDir + 'deg)';
+
+            // Update wind compass rose
+            var compassArrow = document.getElementById('wind-compass-arrow');
+            if (compassArrow) compassArrow.setAttribute('transform', 'rotate(' + windDir + ' 90 90)');
+            var compassSpd = document.getElementById('compass-wind-speed');
+            if (compassSpd) compassSpd.textContent = windSpd + ' kts';
+            var compassDir = document.getElementById('compass-wind-dir');
+            if (compassDir) compassDir.textContent = windDir + '°';
+
+            // Update inline weather cards
+            var wxDir = document.getElementById('wx-wind-dir');
+            if (wxDir) wxDir.textContent = windDir + '°';
+            var wxSpd = document.getElementById('wx-wind-spd');
+            if (wxSpd) wxSpd.textContent = windSpd + ' kts';
+            var wxTemp = document.getElementById('wx-temp-card');
+            if (wxTemp) wxTemp.textContent = Math.round(tempC) + '°C';
+            var wxGust = document.getElementById('wx-gust-card');
+            if (wxGust) wxGust.textContent = gusts + ' kts';
+            var wxHw = document.getElementById('wx-hw');
+            if (wxHw) wxHw.textContent = (headwind >= 0 ? '+' : '') + headwind + ' kts';
+            var wxXw = document.getElementById('wx-xw');
+            if (wxXw) wxXw.textContent = crosswind + ' kts';
+
+            // Update winds-aloft surface row
+            var waSfc = document.getElementById('wa-sfc-dir');
+            if (waSfc) waSfc.textContent = windDir + '°';
+            var waSfcSpd = document.getElementById('wa-sfc-spd');
+            if (waSfcSpd) waSfcSpd.textContent = windSpd + ' kts';
+
+            // Update compass rose big display + data rows
+            var compassBig = document.getElementById('compass-big-display');
+            if (compassBig) compassBig.textContent = windDir + '° @ ' + windSpd + ' kts';
+            var cHw = document.getElementById('c-hw');
+            if (cHw) cHw.textContent = (headwind >= 0 ? '+' : '') + headwind + ' kts ✓';
+            var cXw = document.getElementById('c-xw');
+            if (cXw) cXw.textContent = crosswind + ' kts ' + (crosswind < 15 ? '✓' : '⚠');
+            var cTemp = document.getElementById('c-temp');
+            if (cTemp) cTemp.textContent = tempC + '°C / ' + tempF + '°F';
+            var cPress = document.getElementById('c-press');
+            if (cPress) cPress.textContent = press + ' hPa';
 
             // Generate synthetic dynamic METAR
             var timeStr = new Date().toISOString().slice(8,10) + new Date().toISOString().slice(11,13) + new Date().toISOString().slice(14,16) + 'Z';
@@ -2629,6 +2895,26 @@
       if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); }
       else { var io = new IntersectionObserver(function (a) { a.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }); }, { threshold: .1 }); els.forEach(function (e) { io.observe(e); }); }
     })();
+
+    /* ========================================================= */
+    /* LIVE UTC CLOCK                                            */
+    /* ========================================================= */
+    function updateClocks() {
+      var now = new Date();
+      var h = String(now.getUTCHours()).padStart(2,'0');
+      var m = String(now.getUTCMinutes()).padStart(2,'0');
+      var s = String(now.getUTCSeconds()).padStart(2,'0');
+      var timeStr = h + ':' + m + ':' + s + 'Z';
+      var el1 = document.getElementById('live-utc-clock');
+      var el2 = document.getElementById('bar-utc-clock');
+      if (el1) el1.textContent = timeStr;
+      if (el2) el2.textContent = timeStr;
+    }
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    /* Refresh weather every 5 minutes */
+    setInterval(fetchLiveWeatherAPI, 5 * 60 * 1000);
 
     /* Initialize everything on load */
     window.addEventListener('DOMContentLoaded', function(){
