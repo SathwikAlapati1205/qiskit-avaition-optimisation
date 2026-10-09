@@ -2739,26 +2739,30 @@
       }
 
       list.forEach(function(ac) {
-        var iconHtml = '<div class="plane-svg-wrapper" style="transform: rotate(' + ac.hdg + 'deg);">' +
-          '<svg width="28" height="28" viewBox="0 0 24 24"><use href="#radar-plane"/></svg>' +
-          '</div>';
-
-        var customIcon = L.divIcon({
-          className: 'plane-marker-icon',
-          html: iconHtml,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
-        });
-
         if (planeMarkers[ac.id]) {
           planeMarkers[ac.id].setLatLng([ac.lat, ac.lon]);
-          planeMarkers[ac.id].setIcon(customIcon);
+          var el = planeMarkers[ac.id].getElement();
+          if (el) {
+            var wrapper = el.querySelector('.plane-svg-wrapper');
+            if (wrapper) wrapper.style.transform = 'rotate(' + ac.hdg + 'deg)';
+          }
         } else {
+          var iconHtml = '<div class="plane-svg-wrapper" style="transform: rotate(' + ac.hdg + 'deg);">' +
+            '<svg width="28" height="28" viewBox="0 0 24 24"><use href="#radar-plane"/></svg>' +
+            '</div>';
+
+          var customIcon = L.divIcon({
+            className: 'plane-marker-icon',
+            html: iconHtml,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+          });
           var m = L.marker([ac.lat, ac.lon], { icon: customIcon }).addTo(map);
           m.on('click', function() { selectFlight(ac); });
           planeMarkers[ac.id] = m;
         }
       });
+
 
       document.getElementById('active-plane-count').innerText = list.length + ' Tracked ' + (isLive ? '(Live)' : '(Simulated)');
     }
