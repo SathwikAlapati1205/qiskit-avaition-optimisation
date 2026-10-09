@@ -1465,7 +1465,11 @@
         </div>
 
         <div class="header-actions">
+          <button class="btn btn-outline" id="btn-autoscroll" onclick="toggleAutoScroll()" style="font-size:12px; height:32px; padding:0 12px; gap:6px; border-radius:20px; background:var(--s); border:1px solid var(--line);">
+            <span id="autoscroll-icon">▶</span> <span id="autoscroll-text">Auto-Scroll Page</span>
+          </button>
           <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); padding-right:8px; display:flex; align-items:center; gap:6px;">
+
             <span id="live-utc-clock" style="font-weight:600;">00:00:00Z</span>
             <span style="font-size:10px; background:var(--s); padding:2px 6px; border-radius:8px; color:var(--mute-light);">UTC</span>
           </div>
@@ -1490,7 +1494,6 @@
       <div id="view-overview" class="view-panel active-view">
         <section style="border-top:0; padding-top: 70px;">
           <div class="wrap rv">
-            <div class="eyebrow">Qiskit Fall Fest 2026 &nbsp;|&nbsp; Use Case 05 &nbsp;|&nbsp; IBM Quantum Hardware Execution</div>
             <h1>Departures,<br><em>quantum-optimised.</em></h1>
             <p class="lead">A custom 12-qubit QAOA, run on real IBM quantum hardware, found the best gate-hold schedule for six LAX departures. It matched the classical brute-force optimum.</p>
             <div class="spec">
@@ -1504,8 +1507,8 @@
 
         <section id="plain">
           <div class="wrap rv">
-            <div class="eyebrow">In plain English</div>
             <h2>What we actually did.</h2>
+
             <p class="lead">Planes bunch up when too many leave at once. We used a real quantum computer to find the best way to space them out.</p>
             <div class="g3">
               <div class="card">
@@ -2436,6 +2439,49 @@
       if (sb) sb.classList.remove('mobile-open');
     };
     var switchView = window.switchView;
+
+    var autoScrollInterval = null;
+    window.toggleAutoScroll = function() {
+      var btnText = document.getElementById('autoscroll-text');
+      var btnIcon = document.getElementById('autoscroll-icon');
+      var mainEl = document.querySelector('main.main-content');
+
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+        if (btnText) btnText.textContent = 'Auto-Scroll Page';
+        if (btnIcon) btnIcon.textContent = '▶';
+      } else {
+        if (btnText) btnText.textContent = 'Pause Auto-Scroll';
+        if (btnIcon) btnIcon.textContent = '⏸';
+        autoScrollInterval = setInterval(function() {
+          var moved = false;
+          if (mainEl && mainEl.scrollTop + mainEl.clientHeight < mainEl.scrollHeight - 10) {
+            mainEl.scrollTop += 3;
+            moved = true;
+          }
+          if (window.scrollY + window.innerHeight < document.documentElement.scrollHeight - 10) {
+            window.scrollBy(0, 3);
+            moved = true;
+          }
+          if (!moved) {
+            clearInterval(autoScrollInterval);
+            autoScrollInterval = null;
+            if (btnText) btnText.textContent = 'Auto-Scroll Page';
+            if (btnIcon) btnIcon.textContent = '▶';
+          }
+        }, 20);
+      }
+    };
+    var toggleAutoScroll = window.toggleAutoScroll;
+
+    window.scrollToTop = function() {
+      var mainEl = document.querySelector('main.main-content');
+      if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    var scrollToTop = window.scrollToTop;
+
 
 
     function toggleMobileMenu() {

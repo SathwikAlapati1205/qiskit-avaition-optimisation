@@ -4,9 +4,10 @@
 > **ABSTRACT & EXECUTIVE SUMMARY**  
 > High-density airport operations suffer severe runway queue congestion, causing aircraft to idle with engines running and producing unnecessary emissions. This project implements a **utility-scale 12-qubit Quantum Approximate Optimization Algorithm (QAOA)** run directly on real superconducting quantum hardware (**IBM Quantum `ibm_kingston`**).  
 >
-> Targeting **Use Case 05 for Qiskit Fall Fest 2026**, our algorithm models 6 decision flights departing during a peak 16-flight window at Los Angeles International Airport (**LAX**). By binary-encoding four discrete gate-hold delay options ($0, 5, 10, 15$ minutes) into 2-qubit register pairs, QAOA samples from a quantum state biased toward optimal low-congestion schedules.  
+> Our algorithm models 6 decision flights departing during a peak 16-flight window at Los Angeles International Airport (**LAX**). By binary-encoding four discrete gate-hold delay options ($0, 5, 10, 15$ minutes) into 2-qubit register pairs, QAOA samples from a quantum state biased toward optimal low-congestion schedules.  
 >
 > **Key Result:** Executed on `ibm_kingston`, QAOA successfully discovered the global ground-state optimum (bitstring `010101010101`), applying a uniform 5-minute gate hold with engines off. This shifts departures out of the peak 15-minute congestion bin, reducing peak departures from **16 to 8**, avoiding **1,165.83 kg of CO₂**, saving **368.9 kg of jet fuel**, and eliminating **27.9 minutes of idling taxi delay**.
+
 
 ---
 
