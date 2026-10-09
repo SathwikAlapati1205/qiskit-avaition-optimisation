@@ -1465,10 +1465,19 @@
         </div>
 
         <div class="header-actions">
-          <button class="btn btn-outline" id="btn-autoscroll" onclick="toggleAutoScroll()" style="font-size:12px; height:32px; padding:0 12px; gap:6px; border-radius:20px; background:var(--s); border:1px solid var(--line);">
-            <span id="autoscroll-icon">▶</span> <span id="autoscroll-text">Auto-Scroll Page</span>
-          </button>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button class="btn btn-outline" id="btn-autoscroll" onclick="toggleAutoScroll()" style="font-size:12px; height:32px; padding:0 12px; gap:6px; border-radius:20px; background:var(--s); border:1px solid var(--line);">
+              <span id="autoscroll-icon">⏸</span> <span id="autoscroll-text">Pause Auto-Scroll</span>
+            </button>
+            <button class="btn btn-outline" onclick="reverseAutoScroll()" title="Reverse Scroll Direction" style="font-size:12px; height:32px; padding:0 10px; border-radius:20px; background:var(--s); border:1px solid var(--line);">
+              🔄 Reverse
+            </button>
+            <button class="btn btn-outline" onclick="scrollToTop()" title="Scroll to Top" style="font-size:12px; height:32px; padding:0 10px; border-radius:20px; background:var(--s); border:1px solid var(--line);">
+              ⬆ Top
+            </button>
+          </div>
           <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); padding-right:8px; display:flex; align-items:center; gap:6px;">
+
 
             <span id="live-utc-clock" style="font-weight:600;">00:00:00Z</span>
             <span style="font-size:10px; background:var(--s); padding:2px 6px; border-radius:8px; color:var(--mute-light);">UTC</span>
@@ -2441,46 +2450,87 @@
     var switchView = window.switchView;
 
     var autoScrollInterval = null;
-    window.toggleAutoScroll = function() {
+    var scrollDirection = 1;
+
+    window.startAutoScroll = function(dir) {
+      if (dir !== undefined) scrollDirection = dir;
+      if (autoScrollInterval) clearInterval(autoScrollInterval);
+
       var btnText = document.getElementById('autoscroll-text');
       var btnIcon = document.getElementById('autoscroll-icon');
-      var mainEl = document.querySelector('main.main-content');
+      if (btnText) btnText.textContent = (scrollDirection > 0 ? 'Pause Auto-Scroll' : 'Pause Reverse');
+      if (btnIcon) btnIcon.textContent = '⏸';
 
-      if (autoScrollInterval) {
-        clearInterval(autoScrollInterval);
-        autoScrollInterval = null;
-        if (btnText) btnText.textContent = 'Auto-Scroll Page';
-        if (btnIcon) btnIcon.textContent = '▶';
-      } else {
-        if (btnText) btnText.textContent = 'Pause Auto-Scroll';
-        if (btnIcon) btnIcon.textContent = '⏸';
-        autoScrollInterval = setInterval(function() {
-          var moved = false;
+      autoScrollInterval = setInterval(function() {
+        var mainEl = document.querySelector('main.main-content');
+        var moved = false;
+
+        if (scrollDirection > 0) {
           if (mainEl && mainEl.scrollTop + mainEl.clientHeight < mainEl.scrollHeight - 10) {
-            mainEl.scrollTop += 3;
+            mainEl.scrollTop += 2;
             moved = true;
           }
           if (window.scrollY + window.innerHeight < document.documentElement.scrollHeight - 10) {
-            window.scrollBy(0, 3);
+            window.scrollBy(0, 2);
             moved = true;
           }
-          if (!moved) {
-            clearInterval(autoScrollInterval);
-            autoScrollInterval = null;
-            if (btnText) btnText.textContent = 'Auto-Scroll Page';
-            if (btnIcon) btnIcon.textContent = '▶';
+        } else {
+          if (mainEl && mainEl.scrollTop > 5) {
+            mainEl.scrollTop -= 3;
+            moved = true;
           }
-        }, 20);
+          if (window.scrollY > 5) {
+            window.scrollBy(0, -3);
+            moved = true;
+          }
+        }
+
+        if (!moved) {
+          window.pauseAutoScroll();
+        }
+      }, 20);
+    };
+    var startAutoScroll = window.startAutoScroll;
+
+    window.pauseAutoScroll = function() {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+      var btnText = document.getElementById('autoscroll-text');
+      var btnIcon = document.getElementById('autoscroll-icon');
+      if (btnText) btnText.textContent = 'Resume Auto-Scroll';
+      if (btnIcon) btnIcon.textContent = '▶';
+    };
+    var pauseAutoScroll = window.pauseAutoScroll;
+
+    window.toggleAutoScroll = function() {
+      if (autoScrollInterval) {
+        window.pauseAutoScroll();
+      } else {
+        scrollDirection = 1;
+        window.startAutoScroll();
       }
     };
     var toggleAutoScroll = window.toggleAutoScroll;
 
+    window.reverseAutoScroll = function() {
+      if (autoScrollInterval && scrollDirection === -1) {
+        window.pauseAutoScroll();
+      } else {
+        window.startAutoScroll(-1);
+      }
+    };
+    var reverseAutoScroll = window.reverseAutoScroll;
+
     window.scrollToTop = function() {
+      window.pauseAutoScroll();
       var mainEl = document.querySelector('main.main-content');
       if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     var scrollToTop = window.scrollToTop;
+
 
 
 
@@ -3096,7 +3146,15 @@
       runRouteCalculation();
       fetchLiveWeatherAPI();
       populateManifestTable(SAMPLE_MANIFEST);
+
+      // Auto-start scrolling landing page 1 second after entrance
+      setTimeout(function() {
+        if (typeof window.startAutoScroll === 'function') {
+          window.startAutoScroll(1);
+        }
+      }, 1000);
     });
+
   </script>
 </body>
 
