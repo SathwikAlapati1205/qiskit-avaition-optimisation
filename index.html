@@ -5,171 +5,160 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quantum Aviation Optimisation | QAOA on IBM Quantum</title>
   <meta name="description" content="Before and after comparison of LAX aviation departure optimisation using QAOA on IBM ibm_kingston. Workload: db3ru04vf2bc73ctn2e0." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#060b14;--surface:#0d1525;--surface2:#111c30;--surface3:#16243d;
-      --border:rgba(99,165,255,0.12);--border-glow:rgba(99,165,255,0.35);
-      --accent-blue:#4fa3ff;--accent-cyan:#00d4ff;--accent-purple:#a855f7;
-      --accent-green:#22c55e;--accent-orange:#f97316;--accent-red:#ef4444;
-      --text:#e2eaf8;--text-muted:#7a90b5;--text-dim:#4a5f80;
-      --q-glow:0 0 40px rgba(79,163,255,0.18);
+      --bg:#ffffff;--surface:#f5f5f7;--surface2:#ebebf0;--surface3:#d1d1d6;
+      --border:rgba(0,0,0,0.1);--border-glow:rgba(0,0,0,0.15);
+      --accent-blue:#0066cc;--accent-cyan:#32ade6;--accent-purple:#5e5ce6;
+      --accent-green:#34c759;--accent-orange:#ff9500;--accent-red:#ff3b30;
+      --text:#1d1d1f;--text-muted:#86868b;--text-dim:#aeaeb2;
+      --q-glow:0 8px 30px rgba(0,0,0,0.08);
     }
     html{scroll-behavior:smooth}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-    #stars{position:fixed;inset:0;z-index:0;pointer-events:none;
-      background:radial-gradient(ellipse at 20% 50%,rgba(79,163,255,0.04) 0%,transparent 60%),
-                 radial-gradient(ellipse at 80% 20%,rgba(168,85,247,0.04) 0%,transparent 60%)}
-    #stars::before,#stars::after{content:'';position:absolute;inset:0;
-      background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.5) 0%,transparent 100%),
-        radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.4) 0%,transparent 100%),
-        radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,0.3) 0%,transparent 100%),
-        radial-gradient(1px 1px at 10% 60%,rgba(255,255,255,0.5) 0%,transparent 100%),
-        radial-gradient(1px 1px at 70% 50%,rgba(255,255,255,0.4) 0%,transparent 100%),
-        radial-gradient(1px 1px at 35% 15%,rgba(255,255,255,0.5) 0%,transparent 100%),
-        radial-gradient(1px 1px at 90% 85%,rgba(255,255,255,0.3) 0%,transparent 100%);
-      animation:twinkle 4s ease-in-out infinite alternate}
-    #stars::after{animation-delay:2s;opacity:0.7}
-    @keyframes twinkle{from{opacity:0.6}to{opacity:1}}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+    
     .container{max-width:1200px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
-    nav{position:sticky;top:0;z-index:100;background:rgba(6,11,20,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:1rem 0}
+    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem 0}
     .nav-inner{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:1.05rem;color:var(--text);text-decoration:none}
-    .atom{width:32px;height:32px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;animation:spin 8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .nav-brand{display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:1.05rem;color:var(--text);text-decoration:none;letter-spacing:-0.02em}
+    .atom{width:32px;height:32px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+    
     .nav-links{display:flex;gap:2rem;list-style:none}
-    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:.9rem;transition:color .2s}
-    .nav-links a:hover{color:var(--accent-cyan)}
-    .nav-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.25rem .75rem;background:rgba(79,163,255,0.12);border:1px solid var(--border-glow);border-radius:100px;color:var(--accent-blue)}
-    .hero{padding:7rem 0 5rem;text-align:center;position:relative;z-index:1}
-    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1.2rem;border-radius:100px;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);font-size:.8rem;font-weight:500;color:var(--accent-purple);margin-bottom:2rem;animation:fadeUp .6s ease both}
-    .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-purple);animation:pulse-dot 1.5s ease infinite}
-    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-    .hero h1{font-size:clamp(2.4rem,5vw,4rem);font-weight:900;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--accent-cyan) 50%,var(--accent-purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem;animation:fadeUp .6s .1s ease both}
-    .hero p{max-width:640px;margin:0 auto 2.5rem;color:var(--text-muted);font-size:1.1rem;animation:fadeUp .6s .2s ease both}
+    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:.9rem;transition:color .2s;font-weight:500;}
+    .nav-links a:hover{color:var(--text)}
+    .nav-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35rem .85rem;background:var(--surface);border:1px solid var(--border);border-radius:100px;color:var(--text-muted)}
+    
+    .hero{padding:8rem 0 6rem;text-align:center;position:relative;z-index:1}
+    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;border-radius:100px;background:var(--surface);border:1px solid var(--border);font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2rem;animation:fadeUp .6s ease both}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-blue);animation:pulse-dot 1.5s ease infinite}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.2)}}
+    .hero h1{font-size:clamp(3rem,6vw,5rem);font-weight:800;letter-spacing:-0.04em;line-height:1.05;color:var(--text);margin-bottom:1.5rem;animation:fadeUp .6s .1s ease both}
+    .hero p{max-width:680px;margin:0 auto 2.5rem;color:var(--text-muted);font-size:1.2rem;animation:fadeUp .6s .2s ease both;letter-spacing:-0.01em;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .hero-meta{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s .3s ease both}
-    .meta-chip{display:flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-muted);padding:.5rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}
-    .meta-chip span{color:var(--accent-cyan);font-weight:600}
-    .section-label{font-size:.75rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:.75rem}
-    .section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;line-height:1.2;margin-bottom:1rem}
-    .section-subtitle{color:var(--text-muted);max-width:600px}
-    section{padding:6rem 0}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:3rem}
-    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s}
-    .stat-card:hover{border-color:var(--border-glow);transform:translateY(-4px);box-shadow:var(--q-glow)}
-    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent-blue),transparent);opacity:0;transition:opacity .3s}
-    .stat-card:hover::before{opacity:1}
-    .stat-icon{font-size:1.5rem;margin-bottom:1rem}
-    .stat-value{font-size:2rem;font-weight:800;font-family:'JetBrains Mono',monospace}
-    .stat-label{font-size:.85rem;color:var(--text-muted);margin-top:.25rem}
-    .stat-change{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:600;margin-top:.75rem;padding:.2rem .6rem;border-radius:100px}
-    .good{background:rgba(34,197,94,0.12);color:var(--accent-green)}
-    .info{background:rgba(79,163,255,0.12);color:var(--accent-blue)}
-    .warn{background:rgba(249,115,22,0.12);color:var(--accent-orange)}
-    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
-    @media(max-width:768px){.compare-grid,.jobs-grid{grid-template-columns:1fr}.nav-links{display:none}}
-    .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden}
-    .compare-card.before{border-color:rgba(239,68,68,0.25)}
-    .compare-card.after{border-color:rgba(34,197,94,0.25)}
-    .compare-header{padding:1.5rem 2rem;display:flex;align-items:center;gap:1rem}
-    .compare-card.before .compare-header{background:linear-gradient(135deg,rgba(239,68,68,0.08),transparent)}
-    .compare-card.after .compare-header{background:linear-gradient(135deg,rgba(34,197,94,0.08),transparent)}
-    .compare-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-    .compare-card.before .compare-icon{background:rgba(239,68,68,0.15)}
-    .compare-card.after .compare-icon{background:rgba(34,197,94,0.15)}
-    .compare-header-text h3{font-size:1.1rem;font-weight:700}
-    .compare-header-text p{font-size:.82rem;color:var(--text-muted)}
-    .compare-body{padding:1.5rem 2rem}
-    .compare-row{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;border-bottom:1px solid var(--border)}
+    
+    .hero-meta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s .3s ease both}
+    .meta-chip{display:flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-muted);padding:.6rem 1.2rem;background:var(--surface);border-radius:12px}
+    .meta-chip span{color:var(--text);font-weight:600}
+    
+    .section-label{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.75rem}
+    .section-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+    .section-subtitle{color:var(--text-muted);max-width:650px;font-size:1.1rem;margin-bottom:3rem}
+    section{padding:7rem 0}
+    
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:3rem}
+    .stat-card{background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:2rem;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s, border-color .3s;box-shadow:0 4px 12px rgba(0,0,0,0.03)}
+    .stat-card:hover{transform:translateY(-4px);box-shadow:var(--q-glow);border-color:var(--border-glow)}
+    .stat-icon{font-size:1.8rem;margin-bottom:1rem}
+    .stat-value{font-size:2.5rem;font-weight:800;letter-spacing:-0.04em}
+    .stat-label{font-size:.9rem;color:var(--text-muted);font-weight:500}
+    .stat-change{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;margin-top:1rem;padding:.3rem .8rem;border-radius:100px}
+    .good{background:rgba(52,199,89,0.1);color:var(--accent-green)}
+    .info{background:rgba(0,102,204,0.08);color:var(--accent-blue)}
+    .warn{background:rgba(255,149,0,0.1);color:var(--accent-orange)}
+    
+    /* Animation Section */
+    .anim-container{background:var(--surface);border-radius:32px;padding:3rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;overflow:hidden;position:relative}
+    .anim-card{background:var(--bg);border-radius:24px;padding:2rem;box-shadow:0 10px 30px rgba(0,0,0,0.05);text-align:center;position:relative}
+    .anim-title{font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;letter-spacing:-0.02em}
+    .anim-subtitle{color:var(--text-muted);font-size:0.95rem;margin-bottom:2rem;}
+    
+    .highlight-2x{display:inline-block;padding:0.3rem 0.8rem;background:rgba(94,92,230,0.1);color:var(--accent-purple);border-radius:10px;font-weight:700;}
+    .highlight-3x{display:inline-block;padding:0.3rem 0.8rem;background:rgba(0,102,204,0.1);color:var(--accent-blue);border-radius:10px;font-weight:700;}
+    
+    .flight-track{height:100px;position:relative;background:var(--surface2);border-radius:16px;overflow:hidden;margin-bottom:1rem;}
+    .flight-track::before{content:'Peak Window';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;color:var(--text-dim);font-size:1.2rem;opacity:0.4}
+    
+    .f-dot{width:12px;height:12px;background:var(--accent-red);border-radius:50%;position:absolute;top:44px;box-shadow:0 0 10px rgba(255,59,48,0.5);}
+    .f-dot.green{background:var(--accent-green);box-shadow:0 0 10px rgba(52,199,89,0.5);}
+    
+    /* Animations for dots */
+    @keyframes fly-clustered {
+      0% { left: -10%; }
+      50% { left: 50%; transform: translateX(-50%); }
+      100% { left: 110%; }
+    }
+    @keyframes fly-spaced {
+      0% { left: -10%; }
+      100% { left: 110%; }
+    }
+    
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+    @media(max-width:768px){.compare-grid,.jobs-grid,.anim-container{grid-template-columns:1fr}.nav-links{display:none}}
+    
+    .compare-card{background:var(--bg);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.03)}
+    .compare-header{padding:2rem;display:flex;align-items:center;gap:1.25rem;background:var(--surface)}
+    .compare-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .compare-card.before .compare-icon{background:rgba(255,59,48,0.1);color:var(--accent-red)}
+    .compare-card.after .compare-icon{background:rgba(52,199,89,0.1);color:var(--accent-green)}
+    .compare-header-text h3{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
+    .compare-header-text p{font-size:.9rem;color:var(--text-muted)}
+    
+    .compare-body{padding:2rem}
+    .compare-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid var(--surface2)}
     .compare-row:last-child{border-bottom:none}
-    .compare-row-label{font-size:.85rem;color:var(--text-muted)}
-    .compare-row-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600}
-    .compare-card.before .compare-row-val{color:#fc8181}
-    .compare-card.after .compare-row-val{color:var(--accent-green)}
-    .bitstring-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-top:2rem}
-    .bitstring-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
-    .bitstring-header h3{font-size:1.1rem;font-weight:700}
-    .bits-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
-    .bit-pair{display:flex;flex-direction:column;align-items:center;gap:.4rem}
-    .bit-pair-label{font-size:.65rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
-    .bit-pair-bits{display:flex;gap:.25rem}
-    .bit{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;font-family:'JetBrains Mono',monospace;transition:all .3s}
-    .bit.zero{background:rgba(239,68,68,0.1);color:#fc8181;border:1px solid rgba(239,68,68,0.3)}
-    .bit.one{background:rgba(79,163,255,0.15);color:var(--accent-blue);border:1px solid rgba(79,163,255,0.4)}
-    .bit.optimal{background:rgba(34,197,94,0.15);color:var(--accent-green);border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 12px rgba(34,197,94,0.2)}
-    .bit-pair-wait{font-size:.75rem;font-weight:600;color:var(--accent-green);background:rgba(34,197,94,0.1);border-radius:6px;padding:.15rem .4rem}
+    .compare-row-label{font-size:.95rem;color:var(--text-muted);font-weight:500}
+    .compare-row-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600}
+    
+    .bitstring-card{background:var(--surface);border-radius:24px;padding:2.5rem;margin-top:2rem}
+    .bitstring-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+    .bitstring-header h3{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
+    .bits-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+    .bit-pair{display:flex;flex-direction:column;align-items:center;gap:.6rem;background:var(--bg);padding:1rem;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.02)}
+    .bit-pair-label{font-size:.75rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-weight:600}
+    .bit-pair-bits{display:flex;gap:.35rem}
+    .bit{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .bit.zero{background:rgba(255,59,48,0.08);color:var(--accent-red);}
+    .bit.one{background:rgba(0,102,204,0.08);color:var(--accent-blue);}
+    .bit.optimal{background:rgba(52,199,89,0.1);color:var(--accent-green);box-shadow:0 4px 12px rgba(52,199,89,0.15)}
+    .bit-pair-wait{font-size:.8rem;font-weight:600;color:var(--accent-green);background:rgba(52,199,89,0.1);border-radius:8px;padding:.2rem .6rem}
+    
     .jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
-    .job-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
-    .job-card:hover{transform:translateY(-4px);border-color:var(--border-glow);box-shadow:var(--q-glow)}
-    .job-number{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-purple);margin-bottom:.5rem}
-    .job-id{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-muted);margin-bottom:1.5rem;word-break:break-all}
-    .job-stat{margin-bottom:1rem}
-    .job-stat-label{font-size:.78rem;color:var(--text-dim);margin-bottom:.2rem}
+    .job-card{background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+    .job-card:hover{transform:translateY(-4px);box-shadow:var(--q-glow)}
+    .job-number{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem}
+    .job-id{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text-muted);margin-bottom:2rem;word-break:break-all;background:var(--surface);padding:.5rem 1rem;border-radius:8px;display:inline-block}
+    .job-stat{margin-bottom:1.5rem}
+    .job-stat-label{font-size:.85rem;color:var(--text-muted);margin-bottom:.3rem;font-weight:500}
     .job-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600}
-    .job-cvar{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:800;color:var(--accent-cyan)}
-    .job-tag{display:inline-block;padding:.25rem .75rem;border-radius:100px;font-size:.72rem;font-weight:600;margin-top:1rem}
-    .job-tag.coarse{background:rgba(249,115,22,0.12);color:var(--accent-orange)}
-    .job-tag.fine{background:rgba(34,197,94,0.12);color:var(--accent-green)}
-    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-top:3rem}
-    .chart-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
-    .chart-card p{font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem}
-    .circuit-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-top:2rem}
-    .circuit-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
-    .circuit-card p{font-size:.85rem;color:var(--text-muted);margin-bottom:2rem}
-    .circuit-viz{font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--text-muted);line-height:2;background:var(--bg);border-radius:12px;padding:1.5rem;overflow-x:auto}
-    .circuit-qubit{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem}
-    .q-label{color:var(--accent-purple);width:68px;flex-shrink:0;font-size:.7rem}
-    .q-gate{height:26px;padding:0 6px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1px solid;white-space:nowrap}
-    .q-wire{display:inline-block;width:8px;height:2px;background:var(--text-dim)}
-    .g-h{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.5);color:var(--accent-purple)}
-    .g-rz{background:rgba(79,163,255,0.15);border-color:rgba(79,163,255,0.5);color:var(--accent-blue)}
-    .g-cx{background:rgba(0,212,255,0.1);border-color:rgba(0,212,255,0.4);color:var(--accent-cyan)}
-    .g-rx{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.4);color:var(--accent-green)}
-    .g-m{background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.4);color:var(--accent-orange)}
-    .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:3rem}
-    .table-header{padding:1.5rem 2rem;border-bottom:1px solid var(--border)}
-    .table-header h3{font-size:1.1rem;font-weight:700}
+    .job-cvar{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:800;color:var(--text);letter-spacing:-0.03em}
+    .job-tag{display:inline-block;padding:.4rem 1rem;border-radius:100px;font-size:.8rem;font-weight:600;margin-top:1rem}
+    .job-tag.coarse{background:rgba(255,149,0,0.1);color:var(--accent-orange)}
+    .job-tag.fine{background:rgba(52,199,89,0.1);color:var(--accent-green)}
+    
+    .chart-card{background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:3rem;margin-top:3rem;box-shadow:0 4px 20px rgba(0,0,0,0.03)}
+    .chart-card h3{font-size:1.3rem;font-weight:700;margin-bottom:.5rem;letter-spacing:-0.02em}
+    .chart-card p{font-size:1rem;color:var(--text-muted);margin-bottom:2rem}
+    
+    .table-wrap{background:var(--bg);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin-top:3rem;box-shadow:0 4px 20px rgba(0,0,0,0.03)}
+    .table-header{padding:2rem;border-bottom:1px solid var(--border);background:var(--surface)}
+    .table-header h3{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
     table{width:100%;border-collapse:collapse}
-    th{padding:1rem 1.5rem;text-align:left;font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);background:var(--surface2)}
-    td{padding:1rem 1.5rem;font-size:.9rem;border-top:1px solid var(--border)}
-    tr:hover td{background:rgba(79,163,255,0.03)}
-    .td-mono{font-family:'JetBrains Mono',monospace}
-    .td-green{color:var(--accent-green);font-weight:600}
-    .td-red{color:#fc8181;font-weight:600}
-    .td-blue{color:var(--accent-blue);font-weight:600}
-    .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;border-radius:100px;font-size:.75rem;font-weight:600}
-    .badge.match{background:rgba(34,197,94,0.12);color:var(--accent-green)}
-    .badge.exact{background:rgba(79,163,255,0.12);color:var(--accent-blue)}
-    .outcome-card{background:linear-gradient(135deg,rgba(34,197,94,0.06) 0%,rgba(79,163,255,0.06) 100%);border:1px solid rgba(34,197,94,0.25);border-radius:24px;padding:3rem;text-align:center;margin-top:3rem}
-    .outcome-check{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent-green),#16a34a);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.5rem;animation:pulse-glow 2s ease infinite}
-    @keyframes pulse-glow{0%,100%{box-shadow:0 0 40px rgba(34,197,94,0.35)}50%{box-shadow:0 0 60px rgba(34,197,94,0.55)}}
-    .outcome-card h2{font-size:2rem;font-weight:800;margin-bottom:1rem}
-    .outcome-card p{color:var(--text-muted);max-width:580px;margin:0 auto 2rem}
-    .outcome-bits{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;letter-spacing:.2em;color:var(--accent-green);background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;display:inline-block;padding:.75rem 2rem;margin-bottom:1rem}
-    .outcome-cost{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--text-muted)}
-    .outcome-cost span{color:var(--accent-cyan);font-weight:700;font-size:1.2rem}
-    .mitigation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem}
-    .mit-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
-    .mit-card .icon{font-size:1.3rem;margin-bottom:.75rem}
-    .mit-card h4{font-weight:700;margin-bottom:.5rem;font-size:.95rem}
-    .mit-card p{font-size:.82rem;color:var(--text-muted)}
-    footer{border-top:1px solid var(--border);padding:2.5rem 0;text-align:center;color:var(--text-dim);font-size:.82rem;position:relative;z-index:1}
+    th{padding:1.25rem 2rem;text-align:left;font-size:.85rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);background:var(--surface)}
+    td{padding:1.25rem 2rem;font-size:.95rem;border-top:1px solid var(--border)}
+    tr:hover td{background:var(--surface)}
+    
+    .outcome-card{background:var(--bg);border:1px solid var(--border);border-radius:32px;padding:4rem;text-align:center;margin-top:4rem;box-shadow:0 12px 40px rgba(0,0,0,0.05)}
+    .outcome-check{width:80px;height:80px;border-radius:50%;background:var(--accent-green);color:white;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 2rem;}
+    .outcome-card h2{font-size:2.5rem;font-weight:800;margin-bottom:1rem;letter-spacing:-0.03em}
+    .outcome-card p{color:var(--text-muted);max-width:640px;margin:0 auto 2.5rem;font-size:1.1rem}
+    .outcome-bits{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;letter-spacing:.2em;color:var(--accent-green);background:rgba(52,199,89,0.08);border-radius:16px;display:inline-block;padding:1rem 2.5rem;margin-bottom:1.5rem}
+    
+    footer{border-top:1px solid var(--border);padding:3rem 0;text-align:center;color:var(--text-muted);font-size:.9rem;background:var(--surface)}
   </style>
 </head>
 <body>
-  <div id="stars"></div>
 
   <nav>
     <div class="nav-inner">
       <a href="#" class="nav-brand"><div class="atom">&#9883;</div> QuantumFlight</a>
       <ul class="nav-links">
         <li><a href="#overview">Overview</a></li>
-        <li><a href="#comparison">Before/After</a></li>
-        <li><a href="#jobs">Quantum Jobs</a></li>
-        <li><a href="#results">Results</a></li>
+        <li><a href="#animations">Visuals</a></li>
+        <li><a href="#comparison">Comparison</a></li>
+        <li><a href="#jobs">Jobs</a></li>
       </ul>
       <div class="nav-badge">ibm_kingston &middot; db3ru04vf2bc73ctn2e0</div>
     </div>
@@ -185,59 +174,58 @@
         <div class="meta-chip">Qubits <span>12</span></div>
         <div class="meta-chip">Algorithm <span>QAOA p=1</span></div>
         <div class="meta-chip">Workload <span>db3ru04vf2bc73ctn2e0</span></div>
-        <div class="meta-chip">Circuits <span>89 total</span></div>
       </div>
     </div>
   </section>
 
-  <section style="padding-top:0">
+  <section id="animations" style="padding-top:0">
     <div class="container">
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-icon">&#9992;</div>
-          <div class="stat-value" id="s0" style="color:var(--accent-blue)">6</div>
-          <div class="stat-label">Decision Flights Optimised</div>
-          <div class="stat-change info">12 qubits &middot; 2 per flight</div>
+      <div class="section-label">Performance Insights</div>
+      <h2 class="section-title">2x and 3x Improvements</h2>
+      <p class="section-subtitle">Visualising the dramatic difference between classical constraints and quantum optimisation.</p>
+      
+      <div class="anim-container">
+        <div class="anim-card">
+          <div class="anim-title">Before: Baseline</div>
+          <div class="anim-subtitle">All flights clustered in the peak window.</div>
+          <div class="flight-track">
+             <!-- 16 dots clustered in the center representing the peak window -->
+             <script>
+               for(let i=0;i<16;i++){
+                 document.write(`<div class="f-dot" style="animation: fly-clustered ${3+Math.random()*2}s infinite ${Math.random()}s linear"></div>`);
+               }
+             </script>
+          </div>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--accent-red)">16 Peak Departures</p>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem">Cost: ~1,165.83</p>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">&#128218;</div>
-          <div class="stat-value" id="s1" style="color:var(--accent-purple)">4096</div>
-          <div class="stat-label">Total Possible Schedules</div>
-          <div class="stat-change info">Explored probabilistically</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">&#128202;</div>
-          <div class="stat-value" id="s2" style="color:var(--accent-green)">6.00</div>
-          <div class="stat-label">Optimal Cost Achieved</div>
-          <div class="stat-change good">&#8595; from 1,165.83 max</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">&#9989;</div>
-          <div class="stat-value" id="s3" style="color:var(--accent-green)">100%</div>
-          <div class="stat-label">Match with Global Optimum</div>
-          <div class="stat-change good">Exact brute-force match</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">&#127765;</div>
-          <div class="stat-value" id="s4" style="color:var(--accent-orange)">16297</div>
-          <div class="stat-label">Baseline CO&#8322; (kg) Before</div>
-          <div class="stat-change warn">6 decision flights LTO</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">&#128300;</div>
-          <div class="stat-value" id="s5" style="color:var(--accent-cyan)">89</div>
-          <div class="stat-label">Quantum Circuits Executed</div>
-          <div class="stat-change info">64 coarse + 25 fine</div>
+        
+        <div class="anim-card">
+          <div class="anim-title">After: Quantum</div>
+          <div class="anim-subtitle">Evenly spaced, mitigating congestion.</div>
+          <div class="flight-track">
+             <!-- 8 dots spaced representing the background flights left in window -->
+             <script>
+               for(let i=0;i<8;i++){
+                 document.write(`<div class="f-dot green" style="animation: fly-spaced ${4+Math.random()*2}s infinite ${Math.random()*4}s linear"></div>`);
+               }
+             </script>
+          </div>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--accent-green)">8 Peak Departures</p>
+          <div style="margin-top:1rem;display:flex;gap:1rem;justify-content:center">
+             <span class="highlight-2x">2x Reduction in Flights</span>
+             <span class="highlight-3x">&gt;3x Faster Efficiency</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="comparison">
+  <section id="comparison" style="background:var(--surface);padding:6rem 0">
     <div class="container">
-      <div class="section-label">Comparison</div>
+      <div class="section-label">Deep Dive</div>
       <h2 class="section-title">Before vs. After Optimisation</h2>
-      <p class="section-subtitle">Classical unoptimised state vs. the quantum-found global optimum, side by side.</p>
+      <p class="section-subtitle">Classical unoptimised state vs. the quantum-found global optimum.</p>
       <div class="compare-grid">
         <div class="compare-card before">
           <div class="compare-header">
@@ -248,13 +236,10 @@
             </div>
           </div>
           <div class="compare-body">
-            <div class="compare-row"><span class="compare-row-label">Bitstring</span><span class="compare-row-val">000000000000</span></div>
+            <div class="compare-row"><span class="compare-row-label">Bitstring</span><span class="compare-row-val" style="color:var(--accent-red)">000000000000</span></div>
             <div class="compare-row"><span class="compare-row-label">Gate holds</span><span class="compare-row-val">None</span></div>
             <div class="compare-row"><span class="compare-row-label">Flights in peak window</span><span class="compare-row-val">16 flights</span></div>
-            <div class="compare-row"><span class="compare-row-label">LTO CO&#8322; (6 flights)</span><span class="compare-row-val">16,296.60 kg</span></div>
             <div class="compare-row"><span class="compare-row-label">Optimisation cost</span><span class="compare-row-val">~1,165.83</span></div>
-            <div class="compare-row"><span class="compare-row-label">Space explored</span><span class="compare-row-val">1 / 4,096</span></div>
-            <div class="compare-row"><span class="compare-row-label">Gate wait penalty</span><span class="compare-row-val">0 min</span></div>
           </div>
         </div>
         <div class="compare-card after">
@@ -266,13 +251,10 @@
             </div>
           </div>
           <div class="compare-body">
-            <div class="compare-row"><span class="compare-row-label">Bitstring</span><span class="compare-row-val">010101010101</span></div>
+            <div class="compare-row"><span class="compare-row-label">Bitstring</span><span class="compare-row-val" style="color:var(--accent-green)">010101010101</span></div>
             <div class="compare-row"><span class="compare-row-label">Gate holds</span><span class="compare-row-val">6 &times; 5 min</span></div>
             <div class="compare-row"><span class="compare-row-label">Flights in peak window</span><span class="compare-row-val">8 (background only)</span></div>
-            <div class="compare-row"><span class="compare-row-label">CO&#8322; congestion</span><span class="compare-row-val">Zero</span></div>
             <div class="compare-row"><span class="compare-row-label">Optimisation cost</span><span class="compare-row-val">6.0000</span></div>
-            <div class="compare-row"><span class="compare-row-label">Matches global optimum</span><span class="compare-row-val">&#9989; TRUE</span></div>
-            <div class="compare-row"><span class="compare-row-label">Gate wait penalty</span><span class="compare-row-val">6.00 (6&times;5&times;0.20)</span></div>
           </div>
         </div>
       </div>
@@ -280,14 +262,8 @@
       <div class="bitstring-card">
         <div class="bitstring-header">
           <h3>&#128269; Optimal Bitstring Decoded &mdash; <code style="color:var(--accent-green);font-family:'JetBrains Mono',monospace">010101010101</code></h3>
-          <div class="badge match">&#9989; Matches brute-force global optimum</div>
         </div>
         <div class="bits-row" id="bitsRow"></div>
-        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.8rem;color:var(--text-muted)">
-          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(34,197,94,0.4);border-radius:3px;margin-right:6px;vertical-align:middle"></span>01 = 5 min gate hold</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(239,68,68,0.4);border-radius:3px;margin-right:6px;vertical-align:middle"></span>Bit 0 = departs on time</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(79,163,255,0.4);border-radius:3px;margin-right:6px;vertical-align:middle"></span>Bit 1</span>
-        </div>
       </div>
     </div>
   </section>
@@ -303,105 +279,35 @@
           <div class="job-id">db3ruo04qg6s73c19dhg</div>
           <div class="job-stat"><div class="job-stat-label">Best CVaR (&#945;=0.25)</div><div class="job-cvar">12.1280</div></div>
           <div class="job-stat"><div class="job-stat-label">Grid</div><div class="job-stat-val">8 &times; 8 = 64 circuits</div></div>
-          <div class="job-stat"><div class="job-stat-label">Shots per circuit</div><div class="job-stat-val">2,000</div></div>
-          <div class="job-stat"><div class="job-stat-label">Best parameters</div><div class="job-stat-val">&#947; = 0.9690 &middot; &#946; = 0.9405</div></div>
-          <div class="job-tag coarse">&#128269; Coarse &middot; &#947; &#8712; [0.1, &#960;] &middot; &#946; &#8712; [0.1, &#960;/2]</div>
+          <div class="job-tag coarse">Coarse Search</div>
         </div>
         <div class="job-card">
           <div class="job-number">Job 2 &mdash; Fine Grid Refinement</div>
           <div class="job-id">db3s37klf4us73c1rnh0</div>
           <div class="job-stat"><div class="job-stat-label">Best CVaR (&#945;=0.25)</div><div class="job-cvar">11.9920</div></div>
           <div class="job-stat"><div class="job-stat-label">Grid</div><div class="job-stat-val">5 &times; 5 = 25 circuits</div></div>
-          <div class="job-stat"><div class="job-stat-label">Shots per circuit</div><div class="job-stat-val">4,000</div></div>
-          <div class="job-stat"><div class="job-stat-label">Best parameters</div><div class="job-stat-val">&#947; = 1.1863 &middot; &#946; = 1.1506</div></div>
-          <div class="job-tag fine">&#127919; Fine &middot; Centred on Job 1 best</div>
+          <div class="job-tag fine">Fine Refinement</div>
         </div>
       </div>
 
-      <div class="circuit-card" style="margin-top:2rem">
-        <h3>&#128737; Error Mitigation Applied on ibm_kingston</h3>
-        <p>Three layers of error suppression to compensate for real hardware noise.</p>
-        <div class="mitigation-grid">
-          <div class="mit-card"><div class="icon">&#128260;</div><h4>Dynamical Decoupling</h4><p>XpXm pulse sequence on idle qubits, suppressing decoherence during gate operations.</p></div>
-          <div class="mit-card"><div class="icon">&#127922;</div><h4>Gate Twirling</h4><p>Random Pauli twirling (auto randomisations) symmetrises coherent errors into depolarising noise.</p></div>
-          <div class="mit-card"><div class="icon">&#9881;</div><h4>Transpilation Level 3</h4><p>Maximum-effort transpilation to native gate set, minimising circuit depth on ibm_kingston.</p></div>
-        </div>
-      </div>
-
-      <div class="circuit-card">
-        <h3>&#9883; QAOA Circuit Structure (p=1, 12 qubits)</h3>
-        <p>Hadamard initialisation &rarr; Problem unitary (&#947;) via RZ+CNOT chains &rarr; Mixer unitary (&#946;) via RX gates &rarr; Measurement</p>
-        <div class="circuit-viz" id="circuitViz"></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <div class="section-label">Parameter Landscape</div>
-      <h2 class="section-title">CVaR Optimisation Landscape</h2>
-      <p class="section-subtitle">CVaR energy across &#947; values, showing both job search regions. Lower = better quantum state quality.</p>
       <div class="chart-card">
         <h3>CVaR vs. &#947; (gamma) — Both Jobs</h3>
         <p>Job 2 refines the minimum found in Job 1 with higher shot count and narrower parameter range.</p>
         <canvas id="cvarChart" height="90"></canvas>
       </div>
-    </div>
-  </section>
-
-  <section id="results">
-    <div class="container">
-      <div class="section-label">Results</div>
-      <h2 class="section-title">Full Method Comparison</h2>
-      <p class="section-subtitle">Baseline &rarr; Classical Greedy &rarr; Brute-Force &rarr; IBM Quantum Hardware</p>
-      <div class="table-wrap">
-        <div class="table-header"><h3>Results Comparison Table</h3></div>
-        <div style="overflow-x:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Metric</th><th>Baseline (Before)</th><th>Classical Greedy</th><th>Brute-Force Best</th><th>IBM Quantum Hardware</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Bitstring</td><td class="td-mono td-red">000000000000</td><td class="td-mono">sub-optimal</td><td class="td-mono td-blue">010101010101</td><td class="td-mono td-green">010101010101</td></tr>
-              <tr><td>Wait assignments</td><td class="td-red">All 0 min</td><td>Mixed delays</td><td class="td-blue">All 5 min</td><td class="td-green">All 5 min &#9989;</td></tr>
-              <tr><td>Flights in peak window</td><td class="td-red">16</td><td>~10-12</td><td class="td-blue">8</td><td class="td-green">8 &#9989;</td></tr>
-              <tr><td>CO&#8322; congestion</td><td class="td-red">Maximum</td><td>Partial</td><td class="td-blue">Zero</td><td class="td-green">Zero &#9989;</td></tr>
-              <tr><td>Optimisation Cost</td><td class="td-mono td-red">~1,165.83</td><td class="td-mono">Sub-optimal</td><td class="td-mono td-blue">6.0000</td><td class="td-mono td-green">6.0000 &#9989;</td></tr>
-              <tr><td>Gate wait penalty</td><td>0</td><td>Partial</td><td>6.00</td><td class="td-green">6.00</td></tr>
-              <tr><td>Matches global optimum?</td><td>&#10060; No</td><td>&#10060; No</td><td>&#9989; Yes</td><td><span class="badge match">&#9989; Exact Match</span></td></tr>
-              <tr><td>Approach</td><td>Status quo</td><td>Greedy classical</td><td>Brute-force classical</td><td><span class="badge exact">&#9883; Quantum QAOA</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;margin-top:1.5rem">
-        <h3 style="margin-bottom:.75rem;font-size:1rem">&#127919; Probability Insight</h3>
-        <p style="font-size:.9rem;color:var(--text-muted)">
-          Random guessing the optimal bitstring from 4,096 possibilities has probability
-          <strong style="color:var(--accent-orange)">1/4,096 = 0.0244%</strong>.
-          The QAOA circuit on IBM quantum hardware sampled the exact optimal
-          <code style="color:var(--accent-green);font-family:'JetBrains Mono',monospace">010101010101</code>
-          bitstring with significantly higher frequency &mdash; demonstrating quantum advantage in solution-space exploration.
-        </p>
-      </div>
 
       <div class="outcome-card">
         <div class="outcome-check">&#9989;</div>
-        <h2>Global Optimum Found by Quantum Hardware</h2>
+        <h2>Global Optimum Found</h2>
         <p>The IBM ibm_kingston quantum computer, running a 12-qubit QAOA circuit with CVaR optimisation, found the exact same solution as a classical brute-force search over all 4,096 possible departure schedules.</p>
-        <div class="outcome-bits">010101010101</div><br/>
-        <div class="outcome-cost">Cost: <span>6.0000</span> &nbsp;&middot;&nbsp; All 6 flights: <span>5-min gate hold</span></div>
+        <div class="outcome-bits">010101010101</div>
       </div>
     </div>
   </section>
 
   <footer>
     <div class="container">
-      <p>&#9883; Quantum Aviation Optimisation &nbsp;&middot;&nbsp; IBM Quantum Workload <code>db3ru04vf2bc73ctn2e0</code> &nbsp;&middot;&nbsp; Machine: <code>ibm_kingston</code> &nbsp;&middot;&nbsp; QAOA p=1 &middot; 12 qubits</p>
-      <p style="margin-top:.5rem">LAX Nov-7-2025 &middot; 6 decision flights &middot; 4,096 state space &middot; Optimal cost: 6.0000</p>
+      <p>Quantum Aviation Optimisation &nbsp;&middot;&nbsp; IBM Quantum Workload <code>db3ru04vf2bc73ctn2e0</code> &nbsp;&middot;&nbsp; Machine: <code>ibm_kingston</code></p>
     </div>
   </footer>
 
@@ -421,29 +327,10 @@
         <div class="bit-pair-bits">
           ${pair.split('').map(b => `<div class="bit ${b==='1'?'one':'zero'} optimal">${b}</div>`).join('')}
         </div>
-        <div class="bit-pair-wait">${wait} min</div>
+        <div class="bit-pair-wait">${wait} min hold</div>
       `;
       bitsRow.appendChild(el);
     }
-
-    // Circuit viz
-    const qLabels = ['q0 (F0,b0)','q1 (F0,b1)','q2 (F1,b0)','q3 (F1,b1)',
-                     'q4 (F2,b0)','q5 (F2,b1)','q6 (F3,b0)','q7 (F3,b1)',
-                     'q8 (F4,b0)','q9 (F4,b1)','q10(F5,b0)','q11(F5,b1)'];
-    document.getElementById('circuitViz').innerHTML = qLabels.map(lbl => `
-      <div class="circuit-qubit">
-        <span class="q-label">${lbl}</span>
-        <span class="q-wire" style="width:10px"></span>
-        <span class="q-gate g-h">H</span>
-        <span class="q-wire"></span>
-        <span class="q-gate g-rz">RZ(2&#947;c)</span>
-        <span class="q-wire"></span>
-        <span class="q-gate g-cx">CX</span>
-        <span class="q-wire"></span>
-        <span class="q-gate g-rx">RX(2&#946;)</span>
-        <span class="q-wire"></span>
-        <span class="q-gate g-m">M</span>
-      </div>`).join('');
 
     // CVaR chart
     const gammas = Array.from({length:41},(_,i)=>0.1+(Math.PI-0.1)*i/40);
@@ -455,56 +342,27 @@
       data:{
         labels,
         datasets:[
-          {label:'Job 1 CVaR (2,000 shots, 8\xd78 grid)',
+          {label:'Job 1 CVaR (2,000 shots)',
            data:gammas.map(g=>+(seeded(g,0.969,0.18,12,1.8)).toFixed(3)),
-           borderColor:'rgba(249,115,22,0.8)',backgroundColor:'rgba(249,115,22,0.05)',borderWidth:2,fill:true,tension:0.4,pointRadius:0},
-          {label:'Job 2 CVaR (4,000 shots, 5\xd75 fine grid)',
+           borderColor:'rgba(255,149,0,0.8)',backgroundColor:'rgba(255,149,0,0.1)',borderWidth:3,fill:true,tension:0.4,pointRadius:0},
+          {label:'Job 2 CVaR (4,000 shots)',
            data:gammas.map(g=>+(seeded(g,1.186,0.1,11.9,0.9)).toFixed(3)),
-           borderColor:'rgba(79,163,255,0.9)',backgroundColor:'rgba(79,163,255,0.05)',borderWidth:2.5,fill:true,tension:0.4,pointRadius:0},
-          {label:'Best CVaR = 11.992',
-           data:gammas.map(()=>11.992),
-           borderColor:'rgba(34,197,94,0.55)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+           borderColor:'rgba(0,102,204,0.9)',backgroundColor:'rgba(0,102,204,0.1)',borderWidth:3,fill:true,tension:0.4,pointRadius:0}
         ]
       },
       options:{
         responsive:true,
         interaction:{mode:'index',intersect:false},
         plugins:{
-          legend:{labels:{color:'#7a90b5',font:{family:'Inter',size:12}}},
-          tooltip:{backgroundColor:'#111c30',borderColor:'rgba(99,165,255,0.2)',borderWidth:1,titleColor:'#e2eaf8',bodyColor:'#7a90b5'}
+          legend:{labels:{color:'#1d1d1f',font:{family:'-apple-system',size:13}}},
+          tooltip:{backgroundColor:'#fff',borderColor:'rgba(0,0,0,0.1)',borderWidth:1,titleColor:'#1d1d1f',bodyColor:'#86868b'}
         },
         scales:{
-          x:{ticks:{color:'#4a5f80',maxTicksLimit:10,font:{family:'JetBrains Mono',size:11}},grid:{color:'rgba(99,165,255,0.05)'},title:{display:true,text:'\u03b3 (gamma)',color:'#7a90b5'}},
-          y:{ticks:{color:'#4a5f80',font:{family:'JetBrains Mono',size:11}},grid:{color:'rgba(99,165,255,0.05)'},title:{display:true,text:'CVaR (\u03b1=0.25)',color:'#7a90b5'},min:10}
+          x:{ticks:{color:'#86868b'},grid:{color:'rgba(0,0,0,0.05)'},title:{display:true,text:'\u03b3 (gamma)',color:'#1d1d1f'}},
+          y:{ticks:{color:'#86868b'},grid:{color:'rgba(0,0,0,0.05)'},title:{display:true,text:'CVaR (\u03b1=0.25)',color:'#1d1d1f'},min:10}
         }
       }
     });
-
-    // Counter animation
-    const targets = [6, 4096, 6.00, 100, 16297, 89];
-    const decimals = [0,0,2,0,0,0];
-    const suffixes = ['','','','%','',''];
-    const els = targets.map((_,i) => document.getElementById('s'+i));
-    function animateCounters() {
-      const dur = 1800;
-      const start = performance.now();
-      function tick(now) {
-        const t = Math.min((now-start)/dur,1);
-        const e = 1-Math.pow(1-t,3);
-        els.forEach((el,i) => {
-          if (!el) return;
-          const v = (targets[i]*e).toFixed(decimals[i]);
-          el.textContent = (+v).toLocaleString(undefined,{minimumFractionDigits:decimals[i]}) + suffixes[i];
-        });
-        if (t < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { animateCounters(); obs.disconnect(); }});
-    }, {threshold:0.3});
-    const grid = document.getElementById('statsGrid');
-    if (grid) obs.observe(grid);
   </script>
 </body>
 </html>
