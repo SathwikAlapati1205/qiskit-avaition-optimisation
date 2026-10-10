@@ -1522,7 +1522,7 @@
             <div class="g3">
               <div class="card">
                 <h4>The problem</h4>
-                <p>At LAX, flights that leave in the same 15 minutes queue for the runway with engines running. Taxiing is about <b style="color:#000">40%</b> of all landing and take-off CO2 in our data (99,711 of 214,796 tonnes, estimated), and each extra departure in the window adds 0.310 minutes of taxi time to every plane. In our 16-departure window, each of the six flights burns 4.65 extra minutes and about <b style="color:#000">194.31 kg of CO2</b> sitting in the queue: <b style="color:#000">1,165.83 kg of CO2</b> and 368.9 kg of fuel in total, for no benefit.</p>
+                <p>At LAX, flights that leave in the same 15 minutes queue for the runway with engines running. Taxiing is about <b style="color:#000">40%</b> of all landing and take-off CO2 in our data (99,711 of 214,796 tonnes, estimated), and each extra departure in the window adds 0.310 minutes of taxi time to every plane. In our 16-departure window, each of the six flights burns 4.65 extra minutes and about <b style="color:#000">194.31 kg of CO2</b> sitting in the queue: <b style="color:#000">1,165.83 kg of CO2</b> and 368.93 kg of fuel in total (1,165.83 &divide; 3.16), for no benefit.</p>
               </div>
               <div class="card">
                 <h4>The fix we tested</h4>
@@ -1530,7 +1530,7 @@
               </div>
               <div class="card">
                 <h4>What we achieved</h4>
-                <p>The IBM quantum computer found the optimal schedule: applying a 5-minute hold to each flight to shift them out of the congested 15-minute departure bin. That removes <b style="color:#000">1,165.83 kg of CO2</b>, 368.9 kg of fuel, and 27.9 minutes of engines-running taxi time, for a total wait cost of only 6.00, while reducing peak-window departures from 16 to 8.</p>
+                <p>The IBM quantum computer found the optimal schedule: applying a 5-minute hold to each flight to shift them out of the congested 15-minute departure bin. That removes <b style="color:#000">1,165.83 kg of CO2</b> and 368.93 kg of fuel in congestion-driven emissions, for a gate-wait cost of only 6.00 (6 flights &times; 5 min &times; 0.20), while reducing peak-window departures from 16 to 10.</p>
               </div>
             </div>
             <p class="note">Honest context: with six flights a normal computer can also check all 4,096 schedules instantly. We did that to prove the quantum answer is correct. The value is the method, which needs half the qubits and a small number of runs, and is built for schedules too large to check one by one.</p>
@@ -1541,7 +1541,7 @@
           <div class="wrap rv">
             <div class="eyebrow">Why quantum</div>
             <h2>Why the quantum computer chose 5 minutes.</h2>
-            <p class="lead">The drop from 16 departures to 8 is the result. The reason is the cost of each flight, which QAOA samples from a quantum probability distribution biased toward low-cost schedules.</p>
+            <p class="lead">The drop from 16 departures to 10 is the result — all 6 decision flights leave the window; 10 background flights remain. QAOA samples from a quantum probability distribution biased toward the lowest-cost schedules.</p>
             <div class="g4">
               <div class="card">
                 <div class="k b" style="font-size:34px">194.31 kg</div>
@@ -1574,10 +1574,10 @@
               <div class="eyebrow">Peak-window congestion</div>
               <div class="num">2&times;</div>
               <h3>fewer flights in the peak window.</h3>
-              <p>Gate holds move six flights out of the congested window, cutting it from 16 departures to 8.</p>
+              <p>Gate holds move six flights out of the congested window, cutting it from 16 departures to 10 (6 decision flights leave the window; 10 background flights remain).</p>
               <div class="vs">
                 <div>Classical baseline<strong>16</strong></div>
-                <div class="win">Quantum optimum<strong>8</strong></div>
+                <div class="win">Quantum optimum<strong>10</strong></div>
               </div>
             </div>
           </div>
@@ -1631,14 +1631,14 @@
                 <p style="font-size:14px">Congestion taxi CO2 falls from 1,165.83 kg to 0 kg.</p>
               </div>
               <div class="card">
-                <div class="k b" style="font-size:34px">368.9 kg</div>
+                <div class="k b" style="font-size:34px">368.93 kg</div>
                 <h4 style="font-size:18px;margin:12px 0 6px">Jet fuel not burned</h4>
                 <p style="font-size:14px">1,165.83 kg &divide; 3.16 kg CO2 per kg of fuel.</p>
               </div>
               <div class="card">
-                <div class="k b" style="font-size:34px">27.9 min</div>
-                <h4 style="font-size:18px;margin:12px 0 6px">Taxi time saved</h4>
-                <p style="font-size:14px">6 flights &times; 15 extra departures &times; 0.310 min.</p>
+                <div class="k b" style="font-size:34px">10 flights</div>
+                <h4 style="font-size:18px;margin:12px 0 6px">Peak-window departures after hold</h4>
+                <p style="font-size:14px">Down from 16. All 6 decision flights clear the window; 10 background flights remain.</p>
               </div>
               <div class="card">
                 <div class="k b" style="font-size:34px">7.15%</div>
@@ -1660,7 +1660,7 @@
               <div class="card">
                 <div class="k b">100%</div>
                 <h4 style="font-size:18px;margin:12px 0 6px">Of congestion CO2 removed</h4>
-                <p style="font-size:14px">No decision flight remains in the 16-departure window.</p>
+                <p style="font-size:14px">No decision flight remains in the 16-departure window. 10 background flights stay on schedule.</p>
               </div>
             </div>
             <div class="scroll">
@@ -1668,9 +1668,9 @@
                 <tr><th>Metric</th><th>Before</th><th>After</th></tr>
                 <tr><td>Extra departures each decision flight taxis behind</td><td>15</td><td class="hl">0</td></tr>
                 <tr><td>Extra taxi time per flight (15 &times; 0.310 min)</td><td>4.65 min</td><td class="hl">0 min</td></tr>
-                <tr><td>Extra taxi time, all 6 flights</td><td>27.90 min</td><td class="hl">0 min</td></tr>
+                <tr><td>Extra taxi time per decision flight (congestion)</td><td>4.65 min (15 &times; 0.310)</td><td class="hl">0 min (flight left window)</td></tr>
                 <tr><td>Congestion CO2</td><td>1,165.83 kg</td><td class="hl">0 kg</td></tr>
-                <tr><td>Jet fuel behind that CO2</td><td>368.9 kg</td><td class="hl">0 kg</td></tr>
+                <tr><td>Jet fuel behind that CO2</td><td>368.93 kg</td><td class="hl">0 kg</td></tr>
                 <tr><td>Gate-wait penalty (6 &times; 5 min &times; 0.20)</td><td>0</td><td class="hl">6.00 (no fuel burned)</td></tr>
                 <tr><td>Flight-path optimisation</td><td>Baseline</td><td class="hl">4% (Assumed Model Baseline)</td></tr>
               </table>
@@ -1763,7 +1763,7 @@
               <div class="card">
                 <div class="k b">89</div>
                 <h4>Two-phase CVaR tuning</h4>
-                <p>We test 64 settings across a wide range, then zoom into the best area with 25 finer ones. Each run is scored using Conditional Value at Risk (CVaR with &alpha; = 0.25), which averages the best 25% of measured samples (1,000 of 4,000 shots) to filter out hardware readout noise.</p>
+                <p>We test 64 settings across a wide range, then zoom into the best area with 25 finer ones. Each run is scored using Conditional Value at Risk (CVaR with &alpha; = 0.25), which averages the lowest-cost 25% of measured bitstrings. Job 1 used 2,000 shots/circuit; Job 2 used 4,000 shots/circuit.</p>
               </div>
             </div>
           </div>
@@ -1780,7 +1780,7 @@
             <div class="card" style="margin: 24px 0; padding: 20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                 <div>
-                  <small style="font-size:11px; font-weight:700; color:var(--mute-light); text-transform:uppercase;">IBM Quantum Measured Bitstring Distribution (4,000 Shots)</small>
+                  <small style="font-size:11px; font-weight:700; color:var(--mute-light); text-transform:uppercase;">IBM Quantum Best-CVaR Circuit — Job 2 (db3s37klf4us73c1rnh0) — 4,000 Shots</small>
                   <h4 style="font-size:16px; margin:2px 0;">Top Measured Quantum States on <code>ibm_kingston</code></h4>
                 </div>
                 <span class="nav-badge live" style="font-size:11px;">Optimum: 010101010101</span>
@@ -1789,10 +1789,10 @@
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:3px;">
                     <span><code style="color:var(--blue); font-weight:800;">010101010101</code> (Ground State: 5m Hold All) &mdash; Cost: 6.00</span>
-                    <span style="color:var(--blue);">18.4% (736 shots) &#x2705;</span>
+                    <span style="color:var(--blue);">Sampled on hardware &#x2705; (0.02% of 228k shots across all parameter settings)</span>
                   </div>
                   <div style="background:var(--s); border-radius:6px; height:12px; overflow:hidden;">
-                    <div style="width:73.6%; background:var(--b); height:100%; border-radius:6px;"></div>
+                    <div style="width:30%; background:var(--b); height:100%; border-radius:6px;"></div>
                   </div>
                 </div>
                 <div>
